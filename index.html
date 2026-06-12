@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Maturidade • Agência Femo</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        // Configuração personalizada para estender o tema do Tailwind CSS
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-bg-light': '#f3edd8',
+                        'brand-card-light': '#ffffff',
+                        'brand-gold': '#f1b302',
+                        'brand-brown': '#623d28',
+                        'brand-text-dark': '#1a110b',
+                        'brand-gray': '#a0a0a0',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilo adicional para o gradiente do gráfico */
+        .donut-chart-bg {
+            stroke: #e5e0d0; /* Tom claro para o fundo do gráfico */
+        }
+        .donut-chart-fg {
+            stroke: url(#paint0_linear_1_2);
+            /* A animação será acionada via JS */
+        }
+        @keyframes fill-chart {
+            from { stroke-dashoffset: 283; }
+            to { stroke-dashoffset: 119; } /* 283 * (1 - 0.58) */
+        }
+
+        /* Classe para acionar a animação do gráfico */
+        .card-in-view .donut-chart-fg {
+            animation: fill-chart 1.5s ease-out forwards;
+        }
+        /* Classe para a transição suave das barras de progresso */
+        .progress-fill {
+            transition: width 1.8s cubic-bezier(0.25, 1, 0.5, 1); /* Preenchimento elástico */
+        }
+
+        /* Animação para transição de tela (Slide + Fade) */
+        @keyframes slide-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(16px); /* Equivalente a translate-y-4 */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: slide-fade-in 1000ms ease-out forwards;
+        }
+        .step-animate {
+            animation: slide-fade-in 400ms ease-out forwards;
+        }
+
+        /* Animação de fundo (Aurora/Glow) */
+        @keyframes glow-move {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20vw, -15vh) scale(1.1); }
+            50% { transform: translate(-10vw, 10vh) scale(0.9); }
+            75% { transform: translate(15vw, 20vh) scale(1.2); }
+        }
+
+        /* Animação de partículas ambientais */
+        @keyframes floatAndTwinkle {
+          0% {
+            transform: translate(0, 0) scale(0.8);
+            opacity: 0.12;
+          }
+          50% {
+            opacity: 0.28; /* Fica ligeiramente mais forte no meio do caminho */
+          }
+          100% {
+            transform: translate(var(--move-x), var(--move-y)) scale(1.2);
+            opacity: 0.08; /* Volta a ficar quase invisível antes de resetar */
+          }
+        }
+        .ambient-dot {
+          position: absolute;
+          border-radius: 50%;
+          background: #f1b302; /* Tom dourado da nossa paleta */
+          filter: blur(0.5px); /* Leve desfoque para parecer óptico e suave */
+          animation-name: floatAndTwinkle;
+          animation-duration: var(--duration);
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+          box-shadow: 0 0 8px rgba(241, 179, 2, 0.4);
+        }
+
+        /* Estilo para microinteração nos futuros botões de opção */
+        .option-button {
+            transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e5dcc8;
+        }
+        .option-button:hover {
+            transform: translateY(-3px);
+            border-color: #f1b302;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 16px -2px rgba(241, 179, 2, 0.15);
+        }
+        .option-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Efeito de brilho (shimmer) no botão CTA */
+        .shimmer-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: shimmer 6s infinite;
+        }
+        @keyframes shimmer {
+            0% { left: -150%; }
+            40% { left: 150%; }
+            100% { left: 150%; }
+        }
+
+        /* Inputs Premium */
+        input[type="text"],
+        input[type="email"] {
+            border: 2px solid #e5dcc8 !important;
+            transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
+            background: rgba(255, 255, 255, 0.9) !important;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            outline: none !important;
+            border-color: #f1b302 !important;
+            box-shadow: 0 0 0 3px rgba(241, 179, 2, 0.1), 0 4px 12px rgba(241, 179, 2, 0.15) !important;
+            background: rgba(255, 255, 255, 1) !important;
+            transform: translateY(-2px);
+        }
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder {
+            color: #a0a0a0;
+            font-weight: 400;
+        }
+
+        /* Spinner de Loading */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(241, 179, 2, 0.2);
+            border-top-color: #f1b302;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Underline Animado */
+        h1, h2 {
+            position: relative;
+            display: inline-block;
+        }
+        .step-animate h1::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            height: 3px;
+            background: #f1b302;
+            border-radius: 2px;
+            animation: slideUnderline 0.6s ease-out forwards;
+        }
+        @keyframes slideUnderline {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        /* Badge Pulsante */
+        .badge-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Border Glow no Input */
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #f1b302 !important;
+            box-shadow: 0 0 0 3px rgba(241, 179, 2, 0.1), 0 0 20px rgba(241, 179, 2, 0.3) !important;
+        }
+
+        /* Progress Bar Glow */
+        .progress-fill {
+            box-shadow: 0 0 10px rgba(241, 179, 2, 0.4);
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Checkmark Animado */
+        .checkmark {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f1b302;
+            border-radius: 50%;
+            position: relative;
+            margin-left: 8px;
+            animation: checkScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .checkmark::after {
+            content: '✓';
+            position: absolute;
+            color: #f1b302;
+            font-weight: bold;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: checkStroke 0.3s ease-out 0.15s backwards;
+        }
+        @keyframes checkScale {
+            0% {
+                transform: scale(0) rotate(-45deg);
+            }
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+        @keyframes checkStroke {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Card com Entrada */
+        .card-enter {
+            animation: cardEntry 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.95) rotateX(10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-brand-bg-light text-brand-text-dark font-sans min-h-screen flex flex-col transition-opacity duration-500">
+    <!-- Fundo Animado (Aurora/Glow Premium) -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
+        <div class="absolute top-[10vh] left-[10vw] h-[500px] w-[500px] rounded-full bg-brand-gold/5 blur-[150px]" style="animation: glow-move 25s cubic-bezier(0.45, 0, 0.55, 1) infinite;"></div>
+        <div class="absolute bottom-[5vh] right-[15vw] h-[500px] w-[500px] rounded-full bg-brand-brown/8 blur-[150px]" style="animation: glow-move 25s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse;"></div>
+    </div>
+
+    <!-- Fundo de Partículas Ambientais -->
+    <div id="ambient-particles" class="fixed inset-0 -z-[5] pointer-events-none"></div>
+
+    <!-- Header Minimalista -->
+    <header id="main-header" class="w-full px-6 sm:px-12 lg:px-20 py-8 transition-opacity duration-500">
+        <div class="flex items-baseline max-w-screen-2xl mx-auto">
+            <span class="font-bold text-xl tracking-wider text-brand-text-dark">Doc<span class="text-brand-gold">Nós</span>tico</span>
+            <span class="text-xs text-gray-500 tracking-widest hidden sm:block ml-auto">ANÁLISE ESTRATÉGICA • V2.0</span>
+        </div>
+    </header>
+
+    <main id="intro-screen" class="flex-grow w-full grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-16 px-6 sm:px-12 lg:px-20 transition-opacity duration-500">
+
+        <!-- Coluna da Esquerda (Conteúdo e CTA) -->
+        <div class="flex flex-col justify-center text-center lg:text-left animate-fade-in">
+            <!-- Badge de Autoridade -->
+            <p class="badge-pulse inline-block bg-white/60 text-xs font-semibold text-brand-brown/80 tracking-widest mb-6 px-4 py-2 rounded-full border border-brand-brown/10 mx-auto lg:mx-0">
+                ⚡ ANÁLISE CORPORATIVA PARA CONSULTÓRIOS HIGH-TICKET
+            </p>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                Sua clínica tem uma alavanca travada. Quase nunca é a que você imagina. Qual é a <span class="text-brand-gold">sua?</span>
+            </h1>
+
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto lg:mx-0 mb-10">
+                Descubra em qual dos 6 pilares comerciais do seu consultório o dinheiro está vazando e por onde começar a tracionar seus pacientes particulares.
+            </p>
+
+            <div>
+                <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                    <a href="#" id="start-quiz-btn" class="shimmer-btn bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(241,179,2,0.4)] transition-all duration-300 ease-in-out">
+                        Descobrir a minha &rarr;
+                    </a>
+                    <p class="text-xs text-gray-500">Gratuito • Resultado em ~5 minutos</p>
+                </div>
+                <!-- Selo de Proteção de Dados -->
+                <div class="mt-6 flex items-center justify-center lg:justify-start gap-2 text-gray-500 text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                    <span>Seus dados estão protegidos. Diagnóstico em conformidade com as diretrizes da LGPD e sigilo médico profissional.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita (Card de Preview) -->
+        <div class="flex items-center justify-center w-full">
+            <div id="preview-card" class="card-enter bg-brand-card-light w-full max-w-md rounded-2xl p-8 border border-brand-brown/10 shadow-2xl">
+                <p class="text-xs font-semibold text-gray-500 tracking-[0.2em] mb-8 text-center">VEJA O SEU BREAKDOWN COMPLETO</p>
+
+                <!-- Gráfico e Status -->
+                <div class="flex items-center justify-center gap-6 mb-10">
+                    <!-- Gráfico de Rosca (Donut Chart) -->
+                    <div class="relative w-32 h-32">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <!-- Gradiente para a barra de progresso -->
+                            <defs>
+                                <linearGradient id="paint0_linear_1_2" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#f1b302"/>
+                                    <stop offset="1" stop-color="#d9a002"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Círculo de fundo -->
+                            <circle class="donut-chart-bg" cx="50" cy="50" r="45" fill="transparent" stroke-width="10"></circle>
+                            <!-- Círculo de progresso -->
+                            <circle class="donut-chart-fg" cx="50" cy="50" r="45" fill="transparent" stroke-width="10" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="283" stroke-dashoffset="283"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="counter" class="font-bold text-2xl">0</span>
+                            <span class="text-xs text-gray-500">/ 100</span>
+                        </div>
+                    </div>
+                    <!-- Status -->
+                    <div class="text-left">
+                        <span class="inline-flex items-center bg-amber-500/10 text-amber-600 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap">
+                            <span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                            OPERAÇÃO EM AJUSTE
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Barras de Progresso -->
+                <div class="space-y-5">
+                    <!-- Barra 1 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-sm font-medium text-brand-text-dark">Marketing e Vendas</p>
+                            <p class="text-sm font-medium text-brand-gold">82%</p>
+                        </div>
+                        <div class="w-full bg-black/10 rounded-full h-2 overflow-hidden">
+                            <div class="progress-fill bg-brand-gold h-2 rounded-full" data-percentage="82" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Barra 2 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-sm font-medium text-brand-text-dark">Experiência H2H</p>
+                            <p class="text-sm font-medium text-amber-600">55%</p>
+                        </div>
+                        <div class="w-full bg-black/10 rounded-full h-2 overflow-hidden">
+                            <div class="progress-fill bg-amber-600 h-2 rounded-full" data-percentage="55" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Barra 3 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-sm font-medium text-brand-text-dark">CRM e Processos</p>
+                            <p class="text-sm font-medium text-brand-brown">30%</p>
+                        </div>
+                        <div class="w-full bg-black/10 rounded-full h-2 overflow-hidden">
+                            <div class="progress-fill bg-brand-brown h-2 rounded-full" data-percentage="30" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Barra 4 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-sm font-medium text-brand-text-dark">Reputação e Autoridade</p>
+                            <p class="text-sm font-medium text-amber-500">65%</p>
+                        </div>
+                        <div class="w-full bg-black/10 rounded-full h-2 overflow-hidden">
+                            <div class="progress-fill bg-amber-500 h-2 rounded-full" data-percentage="65" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Container do Quiz (inicialmente oculto) -->
+    <div id="quiz-screen" class="hidden flex-grow w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12 transition-opacity duration-500"></div>
+
+    <!-- Rodapé Institucional -->
+    <footer id="main-footer" class="w-full text-center px-6 sm:px-12 lg:px-20 pb-8 transition-opacity duration-500">
+        <div class="border-t border-brand-brown/10 max-w-screen-lg mx-auto mb-8"></div>
+        <div class="text-xs text-gray-600 space-y-2 sm:space-y-0 sm:space-x-4">
+            <span>© 2026 DocNóstico. Todos os direitos reservados.</span>
+            <a href="termos-de-uso.html" class="hover:text-brand-brown transition-colors">Termos de Uso</a>
+            <a href="politicas-de-privacidade.html" class="hover:text-brand-brown transition-colors">Políticas de Privacidade</a>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Diagnóstico de Maturidade Comercial Médica H2H</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- EFEITO DE PARTÍCULAS AMBIENTAIS ---
+            const ambientParticlesContainer = document.getElementById('ambient-particles');
+            if (ambientParticlesContainer) {
+                const particleCount = 18;
+                for (let i = 0; i < particleCount; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'ambient-dot';
+
+                    const size = Math.random() * 4 + 3; // 3px to 7px
+                    dot.style.width = `${size}px`;
+                    dot.style.height = `${size}px`;
+
+                    dot.style.top = `${Math.random() * 100}%`;
+                    dot.style.left = `${Math.random() * 100}%`;
+
+                    const moveX = Math.random() * 160 - 80; // -80px to 80px
+                    const moveY = Math.random() * 160 - 80; // -80px to 80px
+                    dot.style.setProperty('--move-x', `${moveX}px`);
+                    dot.style.setProperty('--move-y', `${moveY}px`);
+
+                    const duration = Math.random() * 10 + 15; // 15s to 25s
+                    dot.style.setProperty('--duration', `${duration}s`);
+
+                    // Use um delay negativo para que as animações comecem em pontos aleatórios do ciclo
+                    dot.style.animationDelay = `-${Math.random() * duration}s`;
+
+                    ambientParticlesContainer.appendChild(dot);
+                }
+            }
+
+            // --- FUNÇÃO DE CONTADOR PROGRESSIVO ---
+            const animateCounter = (element, start, end, duration) => {
+                let startTime = null;
+                const step = (timestamp) => {
+                    if (!startTime) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    element.textContent = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            };
+
+
+            // --- OBSERVER PARA ANIMAÇÕES AO ROLAR ---
+            const card = document.getElementById('preview-card');
+            if (!card) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Adiciona a classe para iniciar a animação do gráfico
+                        card.classList.add('card-in-view');
+
+                        // Anima as barras de progresso
+                        const progressBars = card.querySelectorAll('.progress-fill');
+                        progressBars.forEach(bar => {
+                            const percentage = bar.getAttribute('data-percentage');
+                            bar.style.width = percentage + '%';
+                        });
+
+                        // Inicia o contador de score
+                        animateCounter(document.getElementById('counter'), 0, 58, 1500);
+
+                        // Para de observar após a animação para otimizar
+                        observer.unobserve(card);
+                    }
+                });
+            }, { threshold: 0.5 }); // Aciona quando 50% do card estiver visível
+
+            observer.observe(card);
+
+            // =================================================================
+            // MOTOR DO QUESTIONÁRIO
+            // =================================================================
+
+            const formData = {
+                userDetails: {},
+                answers: [],
+                totalScore: 0,
+            };
+
+            const formSteps = [
+                {
+                    type: 'intro',
+                    content: `
+                        <div class="text-center max-w-2xl mx-auto">
+                            <h1 class="text-4xl sm:text-5xl font-bold mb-2 leading-tight">
+                                Este não é um<br><span class="text-brand-gold">questionário comum</span>
+                            </h1>
+                            <p class="text-xl text-gray-700 font-medium mb-10">É um diagnóstico de posicionamento.</p>
+                            <p class="text-base text-gray-600 mb-12">Cada resposta revelará o nível de maturidade atual do seu consultório — do autoconhecimento até a autoridade real no mercado.</p>
+
+                            <div class="mb-12">
+                                <p class="font-bold text-brand-text-dark mb-6">Sua jornada em 4 etapas:</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">01</div>
+                                        <p class="font-semibold text-brand-text-dark">Autoconhecimento</p>
+                                        <p class="text-xs text-gray-600 mt-1">Fundação</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">02</div>
+                                        <p class="font-semibold text-brand-text-dark">Comunicação</p>
+                                        <p class="text-xs text-gray-600 mt-1">Ponte</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">03</div>
+                                        <p class="font-semibold text-brand-text-dark">Percepção</p>
+                                        <p class="text-xs text-gray-600 mt-1">Reflexo</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">04</div>
+                                        <p class="font-semibold text-brand-text-dark">Maturidade</p>
+                                        <p class="text-xs text-gray-600 mt-1">Resultados</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    `
+                },
+                { type: 'question', pillar: 'Clareza de Marca Pessoal', question: 'Hoje, você conseguiria explicar claramente quem você é como médica, sem falar apenas da sua especialidade?', options: [ { text: 'Não faço ideia', score: 1 }, { text: 'Tenho dificuldade', score: 2 }, { text: 'Consigo parcialmente', score: 3 }, { text: 'Tenho muita clareza', score: 4 } ] },
+                { type: 'question', pillar: 'Qualidade do Conteúdo', question: 'Seu conteúdo hoje transmite:', options: [ { text: 'Só informação técnica', score: 1 }, { text: 'Um pouco de quem eu sou', score: 2 }, { text: 'Mistura entre técnico e pessoal', score: 3 }, { text: 'Uma identidade clara e reconhecível', score: 4 } ] },
+                { type: 'question', pillar: 'Definição de Público-Alvo', question: 'Você sabe exatamente qual paciente quer atrair?', options: [ { text: 'Não', score: 1 }, { text: 'Tenho uma ideia', score: 2 }, { text: 'Sim, mas não aplico', score: 3 }, { text: 'Sim, totalmente claro', score: 4 } ] },
+                { type: 'question', pillar: 'Presença Digital', question: 'Sua presença hoje nas redes é:', options: [ { text: 'Inexistente', score: 1 }, { text: 'Inconstante', score: 2 }, { text: 'Regular', score: 3 }, { text: 'Consistente e estratégica', score: 4 } ] },
+                { type: 'question', pillar: 'Foco da Comunicação', question: 'Hoje, sua comunicação tem mais foco em:', options: [ { text: 'Atrair pacientes', score: 1 }, { text: 'Mostrar conhecimento', score: 2 }, { text: 'Educar e gerar valor', score: 3 }, { text: 'Construir uma percepção clara de quem você é', score: 4 } ] },
+                { type: 'question', pillar: 'Impacto da Comunicação', question: 'Você sente que sua comunicação:', options: [ { text: 'Não gera impacto', score: 1 }, { text: 'Gera algum interesse', score: 2 }, { text: 'Gera conexão', score: 3 }, { text: 'Gera identificação forte', score: 4 } ] },
+                { type: 'question', pillar: 'Percepção/Posicionamento', question: 'Como o paciente te enxerga?', options: [ { text: 'Mais uma opção', score: 1 }, { text: 'Boa profissional', score: 2 }, { text: 'Referência em alguns casos', score: 3 }, { text: 'Autoridade clara', score: 4 } ] },
+                { type: 'question', pillar: 'Poder de Persuasão', question: 'Hoje você sente que:', options: [ { text: 'Preciso convencer', score: 1 }, { text: 'Preciso me provar', score: 2 }, { text: 'Consigo conduzir parcialmente', score: 3 }, { text: 'O paciente já chega inclinado', score: 4 } ] },
+                { type: 'question', pillar: 'Maturidade Financeira', question: 'Como você se sente em relação aos seus valores de consulta comparado aos dos concorrentes?', options: [ { text: 'Cobro menos/Competitivo', score: 1 }, { text: 'Média de mercado', score: 2 }, { text: 'Cobro um pouco mais/Inseguro', score: 3 }, { text: 'Meus valores refletem meu posicionamento', score: 4 } ] },
+                { type: 'question', pillar: 'Conversão', question: 'O que acontece quando um paciente descobre seu preço antes da consulta?', options: [ { text: 'Desaparece', score: 1 }, { text: 'Tenta negociar', score: 2 }, { text: 'Fica em dúvida', score: 3 }, { text: 'Entende o valor e agenda', score: 4 } ] },
+                { type: 'question', pillar: 'Processo de Venda', question: 'Como você descreveria seu processo de venda da consulta/procedimento?', options: [ { text: 'Não tenho', score: 1 }, { text: 'Tento convencer', score: 2 }, { text: 'Tento educar', score: 3 }, { text: 'Tenho um método que conduz o paciente', score: 4 } ] },
+                { type: 'question', pillar: 'Estrutura de Crescimento', question: 'Seu crescimento hoje depende mais de:', options: [ { text: 'Indicação', score: 1 }, { text: 'Sorte', score: 2 }, { text: 'Esforço', score: 3 }, { text: 'Estrutura', score: 4 } ] },
+                { type: 'question', pillar: 'Composição da Agenda', question: 'Sua agenda hoje é composta majoritariamente por:', options: [ { text: 'Convênio', score: 1 }, { text: 'Indicação', score: 2 }, { text: 'Mistura instável', score: 3 }, { text: 'Marca pessoal e autoridade', score: 4 } ] },
+                { type: 'question', pillar: 'Autoridade Real', question: 'Se você parar de postar nas redes por 30 dias, o que acontece com seu faturamento?', options: [ { text: 'Cai drasticamente', score: 1 }, { text: 'Cai um pouco', score: 2 }, { text: 'Não muda nada', score: 3 }, { text: 'Base sólida/Autoridade sustenta', score: 4 } ] },
+                {
+                    type: 'processing',
+                    content: `
+                        <div class="text-center">
+                            <h1 class="text-3xl sm:text-4xl font-bold mb-8">Analisando seu consultório...</h1>
+                            <div class="space-y-5 text-left max-w-md mx-auto">
+                                <div id="loader-1" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="spinner"></span>
+                                        <p class="font-medium">Calculando scores dos 6 pilares...</p>
+                                    </div>
+                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                                </div>
+                                <div id="loader-2" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="spinner"></span>
+                                        <p class="font-medium">Identificando padrões e dores principais...</p>
+                                    </div>
+                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                                </div>
+                                <div id="loader-3" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="spinner"></span>
+                                        <p class="font-medium">Preparando seu diagnóstico personalizado...</p>
+                                    </div>
+                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    type: 'capture',
+                    title: 'Dados para Contato',
+                    content: `
+                        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2">Seu diagnóstico está pronto.</h1>
+                        <p class="text-center text-gray-600 font-light mb-8">Para visualizar, preencha seus dados:</p>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="full-name" class="block text-sm font-medium text-brand-text-dark">Nome completo</label>
+                                <input type="text" name="full-name" id="full-name" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                            </div>
+                            <div>
+                                <label for="specialty" class="block text-sm font-medium text-brand-text-dark">Especialidade médica</label>
+                                <input type="text" name="specialty" id="specialty" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                            </div>
+                            <div>
+                                <label for="city-state" class="block text-sm font-medium text-brand-text-dark">Cidade / Estado</label>
+                                <input type="text" name="city-state" id="city-state" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-brand-text-dark">E-mail</label>
+                                <input type="email" name="email" id="email" data-validate="true" placeholder="seu@email.com.br" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                            </div>
+                            <div>
+                                <label for="whatsapp" class="block text-sm font-medium text-brand-text-dark">WhatsApp</label>
+                                <input type="text" name="whatsapp" id="whatsapp" data-validate="true" placeholder="(00) 00000-0000" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                            <span>Seus dados estão protegidos. Zero spam.</span>
+                        </div>
+                    `
+                },
+                {
+                    type: 'final',
+                    content: `
+                        <div class="text-center">
+                            <h1 class="text-3xl sm:text-4xl font-bold text-green-600 mb-4">Obrigado!</h1>
+                            <p class="text-gray-600 font-light max-w-lg mx-auto">Obrigado por compartilhar suas informações. Nossa equipe de especialistas entrará em contato em breve pelo WhatsApp com sua análise completa e direcionamentos estratégicos.</p>
+                        </div>
+                    `
+                }
+            ];
+
+            let currentStep = 0; // Start at the first question
+
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const introScreen = document.getElementById('intro-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const mainHeader = document.getElementById('main-header');
+            const mainFooter = document.getElementById('main-footer');
+
+            const renderStep = () => {
+                const stepData = formSteps[currentStep];
+                const totalQuestions = formSteps.filter(s => s.type === 'question').length;
+                let currentQuestionIndex = formSteps.slice(0, currentStep).filter(s => s.type === 'question').length;
+
+                let contentHtml = '';
+                let stepTitle = '';
+                let progressPercentage = 0;
+
+                if (stepData.type === 'intro') {
+                    stepTitle = 'Bem-vindo(a)';
+                    progressPercentage = 0;
+                    contentHtml = stepData.content;
+                } else if (stepData.type === 'question') {
+                    stepTitle = `Pergunta ${currentQuestionIndex + 1} de ${totalQuestions}`;
+                    progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+                    const optionsHtml = stepData.options.map(opt =>
+                        `<button class="option-button w-full text-left p-4 mb-3 bg-white/80 border border-gray-300 rounded-lg" data-score="${opt.score}" data-text="${opt.text}">${opt.text}</button>`
+                    ).join('');
+                    contentHtml = `<h1 class="text-2xl sm:text-3xl font-bold text-center mb-8">${stepData.question}</h1><div>${optionsHtml}</div>`;
+                } else if (stepData.type === 'capture') {
+                    stepTitle = 'Seu diagnóstico está pronto';
+                    progressPercentage = 100;
+                    contentHtml = stepData.content;
+                } else {
+                    stepTitle = 'Finalização';
+                    progressPercentage = 100;
+                    contentHtml = stepData.content;
+                }
+
+                quizScreen.innerHTML = `
+                    <div class="w-full max-w-3xl mx-auto">
+                        <div class="mb-8">
+                            <p class="text-center text-sm font-semibold text-gray-500 mb-2">${stepTitle}</p>
+                            <div class="w-full bg-black/10 rounded-full h-2 ${stepData.type !== 'question' ? 'opacity-0' : ''}">
+                                <div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: ${progressPercentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="card-enter bg-brand-card-light w-full rounded-2xl p-8 sm:p-10 lg:p-12 border border-brand-brown/10 shadow-xl">
+                            <div id="step-content-wrapper"></div>
+                        </div>
+                        <div id="nav-buttons" class="mt-8 flex justify-between items-center"></div>
+                    </div>
+                `;
+
+                const stepContentWrapper = document.getElementById('step-content-wrapper');
+                stepContentWrapper.innerHTML = contentHtml;
+                stepContentWrapper.classList.remove('opacity-0');
+                stepContentWrapper.classList.add('step-animate', 'transition-all', 'duration-500');
+
+                const navButtons = document.getElementById('nav-buttons');
+                if (stepData.type === 'intro') {
+                    navButtons.innerHTML = `
+                        <div class="w-full flex flex-col items-center gap-4">
+                            <button id="start-intro-btn" class="shimmer-btn relative overflow-hidden w-full bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Começar diagnóstico &rarr;</button>
+                            <div class="flex items-center justify-center gap-2 text-gray-500 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.5H7a1 1 0 100 2h4a1 1 0 001-1v-4.5z" clip-rule="evenodd" /></svg>
+                                <span>Tempo estimado: ~8 minutos</span>
+                            </div>
+                        </div>
+                    `;
+                    const startBtn = document.getElementById('start-intro-btn');
+                    startBtn.addEventListener('click', (e) => {
+                        const rect = startBtn.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const ripple = document.createElement('span');
+                        ripple.className = 'ripple';
+                        ripple.style.width = ripple.style.height = '30px';
+                        ripple.style.left = x + 'px';
+                        ripple.style.top = y + 'px';
+                        startBtn.appendChild(ripple);
+                        setTimeout(() => { currentStep++; renderStep(); }, 300);
+                    });
+                }
+                if (stepData.type === 'processing') {
+                    // Sequential loading animation with smooth transitions
+                    setTimeout(() => {
+                        const loader1 = document.getElementById('loader-1');
+                        loader1.classList.remove('opacity-0', 'translate-y-4');
+                    }, 500);
+                    setTimeout(() => {
+                        const loader2 = document.getElementById('loader-2');
+                        loader2.classList.remove('opacity-0', 'translate-y-4');
+                    }, 1500);
+                    setTimeout(() => {
+                        const loader3 = document.getElementById('loader-3');
+                        loader3.classList.remove('opacity-0', 'translate-y-4');
+                        setTimeout(() => {
+                            navButtons.innerHTML = `<button id="view-diagnosis-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
+                            navButtons.classList.add('animate-fade-in');
+                            const diagBtn = document.getElementById('view-diagnosis-btn');
+                            diagBtn.addEventListener('click', (e) => {
+                                const rect = diagBtn.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const y = e.clientY - rect.top;
+                                const ripple = document.createElement('span');
+                                ripple.className = 'ripple';
+                                ripple.style.width = ripple.style.height = '30px';
+                                ripple.style.left = x + 'px';
+                                ripple.style.top = y + 'px';
+                                diagBtn.appendChild(ripple);
+                                setTimeout(() => { currentStep++; renderStep(); }, 300);
+                            });
+                        }, 300);
+                    }, 2500);
+                }
+
+                if (stepData.type === 'capture') {
+                    navButtons.innerHTML = `<button id="final-submit-btn" class="shimmer-btn relative overflow-hidden w-full bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
+                    const submitBtn = document.getElementById('final-submit-btn');
+                    submitBtn.addEventListener('click', (e) => {
+                        const rect = submitBtn.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const ripple = document.createElement('span');
+                        ripple.className = 'ripple';
+                        ripple.style.width = ripple.style.height = '30px';
+                        ripple.style.left = x + 'px';
+                        ripple.style.top = y + 'px';
+                        submitBtn.appendChild(ripple);
+                        setTimeout(() => handleFinalSubmit(), 300);
+                    });
+                    document.getElementById('whatsapp').addEventListener('input', handleWhatsAppMask);
+                }
+
+                if (stepData.type === 'question') {
+                    document.querySelectorAll('.option-button').forEach(btn => {
+                        btn.addEventListener('click', handleOptionClick);
+                    });
+                }
+            };
+
+            const handleOptionClick = (e) => {
+                const target = e.currentTarget;
+
+                // Ripple effect
+                const rect = target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.width = ripple.style.height = '20px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                target.appendChild(ripple);
+
+                // Checkmark
+                const checkmark = document.createElement('span');
+                checkmark.className = 'checkmark';
+                target.appendChild(checkmark);
+
+                target.style.pointerEvents = 'none';
+                target.style.opacity = '0.8';
+
+                // Remove previous answer for this pillar if it exists
+                formData.answers = formData.answers.filter(ans => ans.pillar !== formSteps[currentStep].pillar);
+                formData.answers.push({
+                    pillar: formSteps[currentStep].pillar,
+                    question: formSteps[currentStep].question,
+                    answer: target.dataset.text,
+                    score: parseInt(target.dataset.score, 10)
+                });
+
+                setTimeout(() => {
+                    currentStep++;
+                    renderStep();
+                }, 400);
+            };
+
+            const handleFinalSubmit = () => {
+                if (validateAndSaveCaptureForm()) {
+                    const submitBtn = document.getElementById('final-submit-btn');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Processando...';
+                    submitBtn.style.opacity = '0.7';
+                    submitBtn.style.pointerEvents = 'none';
+                    submitData();
+                }
+            };
+            const validateEmail = (email) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            };
+
+            const showValidationError = (message) => {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+                errorDiv.textContent = message;
+                document.body.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            };
+
+            const validateAndSaveCaptureForm = () => {
+                let isValid = true;
+                const inputs = quizScreen.querySelectorAll('input[data-validate="true"]');
+                const errorFields = [];
+
+                inputs.forEach(input => {
+                    input.classList.remove('border-red-500');
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('border-red-500');
+                        errorFields.push(input.placeholder || input.name);
+                    } else if (input.name === 'email' && !validateEmail(input.value)) {
+                        isValid = false;
+                        input.classList.add('border-red-500');
+                        errorFields.push('E-mail inválido');
+                    } else {
+                        formData.userDetails[input.name] = input.value;
+                    }
+                });
+
+                if (!isValid) {
+                    showValidationError(`Preencha corretamente: ${errorFields.join(', ')}`);
+                }
+
+                return isValid;
+            };
+
+            const handleWhatsAppMask = (e) => {
+                let value = e.target.value.replace(/\D/g, '').substring(0, 11);
+                e.target.value = value
+                    .replace(/^(\d{2})(\d)/g, '($1) $2')
+                    .replace(/(\d{5})(\d)/, '$1-$2');
+            };
+
+            const submitData = async () => {
+                formData.totalScore = formData.answers.reduce((total, ans) => total + (ans ? ans.score : 0), 0);
+                if (formData.totalScore < 28) {
+                    formData.tag = '[Urgente - Reposicionamento Necessário]';
+                }
+
+                const emailContent = `
+DIAGNÓSTICO DE POSICIONAMENTO PARA MÉDICOS - DocNóstico
+
+DADOS DA MÉDICA:
+- Nome: ${formData.userDetails['full-name']}
+- Especialidade: ${formData.userDetails['specialty']}
+- Cidade/Estado: ${formData.userDetails['city-state']}
+- E-mail: ${formData.userDetails['email']}
+- WhatsApp: ${formData.userDetails['whatsapp']}
+
+SCORE TOTAL: ${formData.totalScore} / 56 pontos
+
+RESULTADO POR PILAR:
+${formData.answers.map(ans => `- ${ans.pillar}: ${ans.score}/4 - ${ans.answer}`).join('\n')}
+
+CLASSIFICAÇÃO: ${formData.tag || 'Candidata a Reposicionamento'}
+
+Jornada Percorrida:
+1️⃣ Autoconhecimento (Perguntas 1-3)
+2️⃣ Comunicação e Presença (Perguntas 4-6)
+3️⃣ Percepção de Mercado (Perguntas 7-11)
+4️⃣ Maturidade de Negócios (Perguntas 12-14)
+`;
+
+                try {
+                    await fetch('https://formsubmit.co/contato@femo.com.br', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            'email': formData.userDetails['email'],
+                            'name': formData.userDetails['full-name'],
+                            'specialty': formData.userDetails['specialty'],
+                            'city': formData.userDetails['city-state'],
+                            'whatsapp': formData.userDetails['whatsapp'],
+                            'total_score': formData.totalScore,
+                            'tag': formData.tag || 'Cliente Potencial',
+                            'message': emailContent,
+                            '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} - Score ${formData.totalScore}/32`
+                        })
+                    });
+                } catch (error) {
+                    console.error('Erro ao enviar os dados:', error);
+                } finally {
+                    currentStep++;
+                    renderStep();
+                }
+            };
+
+            const addRippleEffect = (btn) => {
+                btn.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.width = ripple.style.height = '30px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    this.appendChild(ripple);
+                });
+            };
+
+            startQuizBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const rect = startQuizBtn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.width = ripple.style.height = '30px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                startQuizBtn.appendChild(ripple);
+
+                setTimeout(() => {
+                    introScreen.classList.add('opacity-0');
+                    mainHeader.classList.add('opacity-0');
+                    mainFooter.classList.add('opacity-0');
+
+                    setTimeout(() => {
+                        introScreen.classList.add('hidden');
+                        mainHeader.classList.add('hidden');
+                        mainFooter.classList.add('hidden');
+                        quizScreen.classList.remove('hidden');
+                        renderStep();
+                    }, 500);
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
