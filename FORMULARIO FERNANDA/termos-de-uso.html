@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso • Agência Femo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        'brand-bg-light': '#f3edd8',
+                        'brand-gold': '#f1b302',
+                        'brand-brown': '#623d28',
+                        'brand-text-dark': '#1a110b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes glow-move {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20vw, -15vh) scale(1.1); }
+            50% { transform: translate(-10vw, 10vh) scale(0.9); }
+            75% { transform: translate(15vw, 20vh) scale(1.2); }
+        }
+    </style>
+</head>
+<body class="bg-brand-bg-light text-brand-text-dark font-sans">
+    <div class="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
+        <div class="absolute top-[10vh] left-[10vw] h-[500px] w-[500px] rounded-full bg-brand-gold/5 blur-[150px]" style="animation: glow-move 25s infinite;"></div>
+        <div class="absolute bottom-[5vh] right-[15vw] h-[500px] w-[500px] rounded-full bg-brand-brown/8 blur-[150px]" style="animation: glow-move 25s infinite reverse;"></div>
+    </div>
+
+    <header class="w-full px-6 sm:px-12 lg:px-20 py-6">
+        <div class="max-w-screen-2xl mx-auto">
+            <a href="index.html" class="font-bold tracking-wider text-sm hover:text-brand-gold transition-colors">← Doc<span class="text-brand-gold">Nós</span>tico</a>
+        </div>
+    </header>
+
+    <main class="w-full px-6 sm:px-12 lg:px-20 py-12">
+        <div class="max-w-3xl mx-auto bg-white/90 rounded-2xl p-8 sm:p-12 border border-brand-brown/10 shadow-xl">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2">Termos de Uso</h1>
+            <p class="text-gray-500 mb-8">Última atualização: 12 de junho de 2026</p>
+
+            <div class="prose prose-sm max-w-none space-y-6 text-gray-700">
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">1. Aceitação dos Termos</h2>
+                    <p>Ao acessar e utilizar a plataforma de Diagnóstico de Maturidade Comercial da DocNóstico ("Serviço"), você concorda em estar vinculado por estes Termos de Uso. Se não concordar com qualquer parte destes termos, por favor não utilize o Serviço.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">2. Descrição do Serviço</h2>
+                    <p>O Serviço consiste em um questionário automatizado que analisa a maturidade comercial de consultórios médicos, gerando um relatório diagnóstico baseado nas respostas fornecidas pelo usuário.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">3. Uso Adequado</h2>
+                    <p>Você concorda em utilizar o Serviço apenas para fins legítimos e de acordo com todas as leis e regulações aplicáveis. É proibido:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-2">
+                        <li>Usar o Serviço para fins ilegais ou fraudulentos</li>
+                        <li>Fornecer informações falsas ou enganosas</li>
+                        <li>Interferir no funcionamento do Serviço</li>
+                        <li>Acessar dados de terceiros sem autorização</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">4. Propriedade Intelectual</h2>
+                    <p>Todo conteúdo, design e funcionalidade do Serviço são propriedade da DocNóstico ou de seus fornecedores e são protegidos por leis de direitos autorais e propriedade intelectual.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">5. Isenção de Responsabilidade</h2>
+                    <p>O Serviço é fornecido "como está", sem garantias de qualquer tipo. O diagnóstico gerado é uma análise baseada em dados fornecidos e não substitui consultoria profissional especializada.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">6. Limitação de Responsabilidade</h2>
+                    <p>A DocNóstico não será responsável por qualquer dano direto, indireto, incidental ou consequente resultante do uso ou incapacidade de usar o Serviço.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">7. Dados Pessoais</h2>
+                    <p>Os dados fornecidos durante o uso do Serviço são tratados em conformidade com nossa Política de Privacidade e com a Lei Geral de Proteção de Dados (LGPD). Para detalhes completos, consulte nossa Política de Privacidade.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">8. Modificações do Serviço</h2>
+                    <p>A DocNóstico reserva o direito de modificar ou descontinuar o Serviço a qualquer momento, com ou sem aviso prévio.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">9. Lei Aplicável</h2>
+                    <p>Estes Termos de Uso são regidos pelas leis da República Federativa do Brasil, especificamente pelas leis do estado onde a DocNóstico está sediada.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-brown mb-3">10. Contato</h2>
+                    <p>Para dúvidas sobre estes Termos de Uso, entre em contato conosco:</p>
+                    <p class="mt-2">📧 <a href="mailto:contato@femo.com.br" class="text-brand-gold hover:underline">contato@femo.com.br</a></p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full text-center px-6 sm:px-12 lg:px-20 pb-8 mt-12">
+        <div class="border-t border-brand-brown/10 max-w-screen-lg mx-auto mb-8"></div>
+        <div class="text-xs text-gray-600">
+            <span>© 2026 DocNóstico. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+</body>
+</html>
