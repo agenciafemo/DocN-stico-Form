@@ -933,9 +933,10 @@
                             city: formData.userDetails['city-state'],
                             whatsapp: formData.userDetails['whatsapp'],
                             score: formData.generalScore,
-                            diagnosis: diagText,
+                            message: diagText,
                             _subject: `Seu Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                            _to: formData.userDetails['email']
+                            _to: formData.userDetails['email'],
+                            _fields: 'name,email,specialty,city,whatsapp,score,message'
                         })
                     });
 
@@ -950,8 +951,9 @@
                             city: formData.userDetails['city-state'],
                             whatsapp: formData.userDetails['whatsapp'],
                             score: formData.generalScore,
-                            diagnosis: diagText,
-                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`
+                            message: diagText,
+                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
+                            _fields: 'name,email,specialty,city,whatsapp,score,message'
                         })
                     });
 
