@@ -853,9 +853,12 @@
                 // Enviar emails em background (sem bloquear)
                 if (typeof emailjs !== 'undefined') {
                     try {
+                        console.log('EmailJS inicializando...');
                         emailjs.init('DeBvD-W6V6AAkoCm_');
+                        console.log('EmailJS inicializado com sucesso');
 
                         // ENVIO 1: Para o email do usuário
+                        console.log('Enviando para:', formData.userDetails['email']);
                         emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
                             user_name: formData.userDetails['full-name'],
                             user_email: formData.userDetails['email'],
@@ -898,9 +901,14 @@ Doutor(a), nós mapeamos visualmente seu breakdown e identificamos onde a sua op
 
 Clique no link para agendar:
 https://seu-calendario.com/agendamento`
-                        }).catch(err => console.error('Erro ao enviar para usuário:', err));
+                        }).then(response => {
+                            console.log('Email enviado para usuário com sucesso:', response);
+                        }).catch(err => {
+                            console.error('Erro ao enviar para usuário:', err);
+                        });
 
                         // ENVIO 2: Para contato@femo.com.br (com dados completos)
+                        console.log('Enviando para contato@femo.com.br');
                         emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
                             user_name: 'Contato - ' + formData.userDetails['full-name'],
                             user_email: 'contato@femo.com.br',
@@ -920,7 +928,11 @@ Breakdown:
 ${Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join('\n')}
 
 Gargalo Principal: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)`
-                        }).catch(err => console.error('Erro ao enviar para contato:', err));
+                        }).then(response => {
+                            console.log('Email enviado para contato com sucesso:', response);
+                        }).catch(err => {
+                            console.error('Erro ao enviar para contato:', err);
+                        });
                     } catch (error) {
                         console.error('Erro ao enviar emails:', error);
                     }
