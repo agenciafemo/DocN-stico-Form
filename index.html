@@ -181,6 +181,11 @@
             border-top-color: #f1b302;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
+            transition: opacity 300ms ease;
+        }
+
+        .spinner.fade-out {
+            opacity: 0;
         }
 
         .checkmark {
@@ -190,6 +195,12 @@
             color: #10b981;
             font-weight: bold;
             font-size: 18px;
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+
+        .checkmark.visible {
+            opacity: 1;
         }
 
         /* Underline Animado */
@@ -668,8 +679,8 @@
                     setTimeout(() => {
                         const spinner1 = document.getElementById('spinner-1');
                         const check1 = document.getElementById('check-1');
-                        if (spinner1) spinner1.style.display = 'none';
-                        if (check1) check1.classList.remove('opacity-0');
+                        if (spinner1) spinner1.classList.add('fade-out');
+                        if (check1) check1.classList.add('visible');
                     }, 1200);
                     setTimeout(() => {
                         const loader2 = document.getElementById('loader-2');
@@ -678,8 +689,8 @@
                     setTimeout(() => {
                         const spinner2 = document.getElementById('spinner-2');
                         const check2 = document.getElementById('check-2');
-                        if (spinner2) spinner2.style.display = 'none';
-                        if (check2) check2.classList.remove('opacity-0');
+                        if (spinner2) spinner2.classList.add('fade-out');
+                        if (check2) check2.classList.add('visible');
                     }, 2200);
                     setTimeout(() => {
                         const loader3 = document.getElementById('loader-3');
@@ -688,8 +699,8 @@
                     setTimeout(() => {
                         const spinner3 = document.getElementById('spinner-3');
                         const check3 = document.getElementById('check-3');
-                        if (spinner3) spinner3.style.display = 'none';
-                        if (check3) check3.classList.remove('opacity-0');
+                        if (spinner3) spinner3.classList.add('fade-out');
+                        if (check3) check3.classList.add('visible');
                         const readyMsg = document.getElementById('ready-message');
                         if (readyMsg) readyMsg.classList.remove('opacity-0');
                         navButtons.innerHTML = `<button id="view-diagnosis-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
