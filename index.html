@@ -846,22 +846,21 @@
             const submitData = async () => {
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
 
-                // Aguardar EmailJS estar carregado
-                if (typeof emailjs === 'undefined') {
-                    console.error('EmailJS não carregou. Aguardando...');
-                    setTimeout(() => submitData(), 500);
-                    return;
-                }
+                // Avançar imediatamente para dashboard
+                currentStep++;
+                renderStep();
 
-                // EmailJS configuration
-                emailjs.init('DeBvD-W6V6AAkoCm_');
+                // Enviar emails em background (sem bloquear)
+                if (typeof emailjs !== 'undefined') {
+                    try {
+                        emailjs.init('DeBvD-W6V6AAkoCm_');
 
-                // ENVIO 1: Para o email do usuário
-                emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
-                    user_name: formData.userDetails['full-name'],
-                    user_email: formData.userDetails['email'],
-                    general_score: formData.generalScore,
-                    diagnosis_text: `DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
+                        // ENVIO 1: Para o email do usuário
+                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                            user_name: formData.userDetails['full-name'],
+                            user_email: formData.userDetails['email'],
+                            general_score: formData.generalScore,
+                            diagnosis_text: `DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
 
 DADOS:
 Nome: ${formData.userDetails['full-name']}
@@ -899,14 +898,14 @@ Doutor(a), nós mapeamos visualmente seu breakdown e identificamos onde a sua op
 
 Clique no link para agendar:
 https://seu-calendario.com/agendamento`
-                }).catch(err => console.error('Erro ao enviar para usuário:', err));
+                        }).catch(err => console.error('Erro ao enviar para usuário:', err));
 
-                // ENVIO 2: Para contato@femo.com.br (com dados completos)
-                emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
-                    user_name: 'Contato - ' + formData.userDetails['full-name'],
-                    user_email: 'contato@femo.com.br',
-                    general_score: formData.generalScore,
-                    diagnosis_text: `NOVO DIAGNÓSTICO RECEBIDO
+                        // ENVIO 2: Para contato@femo.com.br (com dados completos)
+                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                            user_name: 'Contato - ' + formData.userDetails['full-name'],
+                            user_email: 'contato@femo.com.br',
+                            general_score: formData.generalScore,
+                            diagnosis_text: `NOVO DIAGNÓSTICO RECEBIDO
 
 Paciente: ${formData.userDetails['full-name']}
 Especialidade: ${formData.userDetails['specialty']}
@@ -921,11 +920,13 @@ Breakdown:
 ${Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join('\n')}
 
 Gargalo Principal: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)`
-                }).catch(err => console.error('Erro ao enviar para contato:', err));
-
-                // Avançar imediatamente sem esperar resposta
-                currentStep++;
-                renderStep();
+                        }).catch(err => console.error('Erro ao enviar para contato:', err));
+                    } catch (error) {
+                        console.error('Erro ao enviar emails:', error);
+                    }
+                } else {
+                    console.warn('EmailJS não carregou');
+                }
             };
 
             const addRippleEffect = (btn) => {
