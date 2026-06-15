@@ -1,3 +1,5 @@
+import nodemailer from 'nodemailer';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -41,9 +43,11 @@ export default async function handler(req, res) {
       </div>
     `;
 
+    const adminEmail = 'contato@femo.com.br';
+
     // Email para o usuário
     await transporter.sendMail({
-      from: `"DocNóstico" <${process.env.EMAIL_USER}>`,
+      from: `"DocNóstico" <${adminEmail}>`,
       to: email,
       subject: `Seu Diagnóstico DocNóstico - Score ${score}/100`,
       html: diagnosisHtml,
@@ -51,8 +55,8 @@ export default async function handler(req, res) {
 
     // Email para o admin
     await transporter.sendMail({
-      from: `"DocNóstico" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+      from: `"DocNóstico" <${adminEmail}>`,
+      to: adminEmail,
       subject: `Novo Diagnóstico: ${name} (${score}/100)`,
       html: `<p><strong>Novo diagnóstico recebido:</strong></p><p>Nome: ${name}<br>Email: ${email}<br>Score: ${score}/100</p><p style="white-space: pre-wrap;">${diagnosis}</p>`,
     });
