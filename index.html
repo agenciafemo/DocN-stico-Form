@@ -15,6 +15,15 @@
 
     <!-- EmailJS Library v4 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/index.min.js" defer></script>
+    <script>
+        window.addEventListener('load', () => {
+            if (typeof emailjs !== 'undefined') {
+                console.log('✅ EmailJS carregou com sucesso');
+            } else {
+                console.error('❌ EmailJS não carregou');
+            }
+        });
+    </script>
 
     <script>
         // Configuração personalizada para estender o tema do Tailwind CSS
