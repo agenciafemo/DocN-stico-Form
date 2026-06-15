@@ -613,8 +613,7 @@
                 }
 
                 quizScreen.innerHTML = `
-                    <form id="quiz-form" action="https://formsubmit.co/contato@femo.com.br" method="POST" class="w-full max-w-3xl mx-auto">
-                        <!-- Campos ocultos para o FormSubmit -->
+                    <div id="quiz-form" class="w-full max-w-3xl mx-auto">
                         <div class="mb-8">
                             <p class="text-center text-sm font-semibold text-gray-500 mb-2">${stepTitle}</p>
                             <div class="w-full bg-black/10 rounded-full h-2 ${stepData.type !== 'question' ? 'opacity-0' : ''}">
@@ -625,7 +624,7 @@
                             <div id="step-content-wrapper"></div>
                         </div>
                         <div id="nav-buttons" class="mt-8 flex justify-between items-center"></div>
-                    </form>
+                    </div>
                 `;
 
                 const stepContentWrapper = document.getElementById('step-content-wrapper');
@@ -850,61 +849,26 @@
             };
 
             const submitData = () => {
-                const form = document.getElementById('quiz-form');
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
-                
-                // --- CONSTRUÇÃO DO E-MAIL EM HTML ---
-                const diagHtml = `
-                    <div style="font-family: Arial, sans-serif; color: #333; max-width: 680px; margin: auto; border: 1px solid #e0e0e0; padding: 30px; border-radius: 12px; background-color: #fdfdfd;">
-                        <img src="https://i.imgur.com/k9g4gU7.png" alt="Logo da Clínica" style="max-width: 180px; margin: 0 auto 25px auto; display: block;">
-                        
-                        <h1 style="color: #623d28; text-align: center; border-bottom: 2px solid #f1b302; padding-bottom: 10px; margin-bottom: 25px;">Seu Diagnóstico DocNóstico</h1>
-                        
-                        <p style="font-size: 16px;">Olá, <strong>${formData.userDetails['full-name']}</strong>,</p>
-                        <p style="font-size: 16px; line-height: 1.6;">Obrigado por completar a análise. Este é o seu diagnóstico de maturidade comercial, que servirá como ponto de partida para o crescimento estratégico do seu consultório.</p>
-                        
-                        <div style="background-color: #f3edd833; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #f1b302;">
-                            <h2 style="margin-top: 0; color: #623d28;">Resumo Estratégico</h2>
-                            <p><strong>Título do Diagnóstico:</strong> ${diagnosis.title}</p>
-                            <p><strong>Score Geral de Maturidade:</strong> <strong>${formData.generalScore} / 100</strong></p>
-                            <p><strong>Principal Oportunidade de Crescimento:</strong> ${diagnosis.weakestPillar} (${diagnosis.pillarScores[diagnosis.weakestPillar]}%)</p>
-                        </div>
 
-                        <div style="margin: 30px 0;">
-                            <h2 style="color: #623d28; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Análise Detalhada</h2>
-                            <div style="margin-top: 15px; line-height: 1.7;">
-                                <p><strong>Análise de Faturamento:</strong> ${diagnosis.paragraph1}</p>
-                                <p><strong>Análise do Pilar de Oportunidade:</strong> ${diagnosis.paragraph2}</p>
-                                <p><strong>Próximos Passos Recomendados:</strong> ${diagnosis.paragraph3}</p>
-                            </div>
-                        </div>
+                const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-                        <p style="font-size: 12px; color: #888; text-align: center;">Este é um e-mail automático. Nossa equipe de especialistas analisará seus resultados e entrará em contato em breve com direcionamentos estratégicos.</p>
-                        <p style="font-size: 12px; color: #888; text-align: center;"><strong>Dados fornecidos:</strong> Nome: ${formData.userDetails['full-name']}, E-mail: ${formData.userDetails['email']}, WhatsApp: ${formData.userDetails['whatsapp']}.</p>
-                    </div>
-                `;
-
-                // Cria campos ocultos para enviar os dados para o formsubmit.co
-                const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
-                const hiddenFields = {
-                    '_next': `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`, // Redirecionamento dinâmico e personalizado
-                    '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                    '_cc': formData.userDetails['email'], // Envia uma cópia para o e-mail do usuário
-                    '_autoresponse': `Olá ${formData.userDetails['full-name']}, recebemos seu diagnóstico! Uma cópia completa foi enviada para o seu e-mail. Em breve, nossa equipe de especialistas entrará em contato.`,
-                    'message': diagHtml, // Usamos o campo 'message' para enviar o HTML completo
-                }
-
-                for (const key in hiddenFields) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = hiddenFields[key];
-                    form.appendChild(input);
-                }
-
-                form.submit();
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.userDetails['full-name'],
+                        email: formData.userDetails['email'],
+                        score: formData.generalScore,
+                        diagnosis: diagText
+                    })
+                }).then(() => {
+                    const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
+                    window.location.href = `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`;
+                }).catch(err => {
+                    console.error('Erro ao enviar:', err);
+                    alert('Erro ao enviar diagnóstico. Tente novamente.');
+                });
             };
 
             const addRippleEffect = (btn) => {
