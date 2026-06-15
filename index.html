@@ -877,6 +877,8 @@
                             score: formData.generalScore,
                             diagnosis: diagText,
                             _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
+                            _replyto: formData.userDetails['email'],
+                            _to: formData.userDetails['email'],
                             _cc: 'contato@femo.com.br'
                         })
                     });
