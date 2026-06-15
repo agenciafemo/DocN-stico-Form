@@ -613,7 +613,7 @@
                 }
 
                 quizScreen.innerHTML = `
-                    <form id="quiz-form" action="https://formsubmit.co/contato@femo.com.br" method="POST" class="w-full max-w-3xl mx-auto">
+                    <form id="quiz-form" class="w-full max-w-3xl mx-auto">
                         <div class="mb-8">
                             <p class="text-center text-sm font-semibold text-gray-500 mb-2">${stepTitle}</p>
                             <div class="w-full bg-black/10 rounded-full h-2 ${stepData.type !== 'question' ? 'opacity-0' : ''}">
@@ -855,26 +855,30 @@
                     .replace(/(\d{5})(\d)/, '$1-$2');
             };
 
-            const submitData = () => {
+            const submitData = async () => {
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
-                fetch('/api/send-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: formData.userDetails['full-name'],
-                        email: formData.userDetails['email'],
-                        score: formData.generalScore,
-                        diagnosis: diagText
-                    })
-                }).then(() => {
-                    const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
-                    window.location.href = `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`;
-                }).catch(err => {
-                    console.error('Erro ao enviar:', err);
-                    alert('Erro ao enviar diagnóstico. Tente novamente.');
-                });
+                try {
+                    const response = await fetch('/api/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: formData.userDetails['full-name'],
+                            email: formData.userDetails['email'],
+                            score: formData.generalScore,
+                            diagnosis: diagText
+                        })
+                    });
+
+                    if (response.ok) return true;
+
+                    console.error('Erro da API ao enviar e-mail:', await response.json());
+                    return false;
+                } catch (err) {
+                    console.error('Erro de rede ao enviar e-mail:', err);
+                    return false;
+                }
             };
 
             const addRippleEffect = (btn) => {

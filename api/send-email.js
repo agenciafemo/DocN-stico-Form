@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer';
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -45,23 +43,23 @@ export default async function handler(req, res) {
 
     // Email para o usuário
     await transporter.sendMail({
-      from: 'contato@femo.com.br',
+      from: `"DocNóstico" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Seu Diagnóstico DocNóstico - Score ${score}/100`,
-      html: diagnosisHtml
+      html: diagnosisHtml,
     });
 
     // Email para o admin
     await transporter.sendMail({
-      from: 'contato@femo.com.br',
-      to: 'contato@femo.com.br',
+      from: `"DocNóstico" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
       subject: `Novo Diagnóstico: ${name} (${score}/100)`,
-      html: `<p><strong>Novo diagnóstico recebido:</strong></p><p>Nome: ${name}<br>Email: ${email}<br>Score: ${score}/100</p><p style="white-space: pre-wrap;">${diagnosis}</p>`
+      html: `<p><strong>Novo diagnóstico recebido:</strong></p><p>Nome: ${name}<br>Email: ${email}<br>Score: ${score}/100</p><p style="white-space: pre-wrap;">${diagnosis}</p>`,
     });
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
+    console.error('Erro ao enviar e-mail com Nodemailer:', error);
     return res.status(500).json({ error: error.message });
   }
 }
