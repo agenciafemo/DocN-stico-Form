@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -8,15 +8,7 @@ export default async function handler(req, res) {
   const { name, email, score, diagnosis } = req.body;
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'mail.femo.com.br',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'contato@femo.com.br',
-        pass: 'Fmo1320@13femo'
-      }
-    });
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const diagnosisHtml = `
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 680px; margin: auto; border: 1px solid #e0e0e0; padding: 30px; border-radius: 12px; background-color: #fdfdfd;">
@@ -43,27 +35,25 @@ export default async function handler(req, res) {
       </div>
     `;
 
-    const adminEmail = 'contato@femo.com.br';
-
     // Email para o usuário
-    await transporter.sendMail({
-      from: `"DocNóstico" <${adminEmail}>`,
+    await resend.emails.send({
+      from: 'DocNóstico <noreply@docnostico.com>',
       to: email,
       subject: `Seu Diagnóstico DocNóstico - Score ${score}/100`,
       html: diagnosisHtml,
     });
 
     // Email para o admin
-    await transporter.sendMail({
-      from: `"DocNóstico" <${adminEmail}>`,
-      to: adminEmail,
+    await resend.emails.send({
+      from: 'DocNóstico <noreply@docnostico.com>',
+      to: 'contato@femo.com.br',
       subject: `Novo Diagnóstico: ${name} (${score}/100)`,
       html: `<p><strong>Novo diagnóstico recebido:</strong></p><p>Nome: ${name}<br>Email: ${email}<br>Score: ${score}/100</p><p style="white-space: pre-wrap;">${diagnosis}</p>`,
     });
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Erro ao enviar e-mail com Nodemailer:', error);
+    console.error('Erro ao enviar e-mail com Resend:', error);
     return res.status(500).json({ error: error.message });
   }
 }
