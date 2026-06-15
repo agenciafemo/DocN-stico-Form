@@ -1,13 +1,22 @@
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   const { name, email, specialty, city, whatsapp, score, diagnosis } = req.body;
 
-  // Configuração Brevo SMTP
+  console.log('[send-diagnosis] Recebido:', { name, email });
+  console.log('[send-diagnosis] Variáveis de env:', {
+    brevoEmail: process.env.BREVO_EMAIL ? 'OK' : 'MISSING',
+    brevoKey: process.env.BREVO_SMTP_KEY ? 'OK' : 'MISSING'
+  });
+
+  if (!process.env.BREVO_EMAIL || !process.env.BREVO_SMTP_KEY) {
+    return res.status(500).json({ error: 'Variáveis de ambiente não configuradas' });
+  }
+
   const transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
     port: 587,
@@ -19,7 +28,7 @@ export default async function handler(req, res) {
   });
 
   try {
-    // Email para o usuário
+    console.log('[send-diagnosis] Enviando email para usuário:', email);
     await transporter.sendMail({
       from: process.env.BREVO_EMAIL,
       to: email,
@@ -51,7 +60,9 @@ export default async function handler(req, res) {
       `
     });
 
-    // Email para o admin
+    console.log('[send-diagnosis] Email usuário enviado com sucesso');
+
+    console.log('[send-diagnosis] Enviando email para admin');
     await transporter.sendMail({
       from: process.env.BREVO_EMAIL,
       to: 'contato@femo.com.br',
@@ -78,9 +89,10 @@ export default async function handler(req, res) {
       `
     });
 
+    console.log('[send-diagnosis] Email admin enviado com sucesso');
     return res.status(200).json({ success: true, message: 'Diagnóstico enviado com sucesso!' });
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
+    console.error('[send-diagnosis] Erro:', error);
     return res.status(500).json({ error: 'Erro ao enviar diagnóstico', details: error.message });
   }
 }
