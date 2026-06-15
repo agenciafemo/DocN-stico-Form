@@ -859,34 +859,16 @@
 
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
-                const form = document.createElement('form');
-                form.action = 'https://formsubmit.co/el/tugifa';
-                form.method = 'POST';
-                form.enctype = 'application/x-www-form-urlencoded';
-
-                const fields = {
-                    'name': formData.userDetails['full-name'],
-                    'email': formData.userDetails['email'],
-                    'specialty': formData.userDetails['specialty'],
-                    'city': formData.userDetails['city-state'],
-                    'whatsapp': formData.userDetails['whatsapp'],
-                    'score': formData.generalScore,
-                    'diagnosis': diagText,
-                    '_subject': `Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                    '_cc': formData.userDetails['email'],
-                    '_captcha': 'false'
-                };
-
-                for (let key in fields) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = fields[key];
-                    form.appendChild(input);
-                }
-
-                document.body.appendChild(form);
-                form.submit();
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.userDetails['full-name'],
+                        email: formData.userDetails['email'],
+                        score: formData.generalScore,
+                        diagnosis: diagText
+                    })
+                }).catch(err => console.error('Erro ao enviar:', err));
             };
 
             const addRippleEffect = (btn) => {
