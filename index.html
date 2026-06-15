@@ -837,30 +837,28 @@ Agende uma reunião de 25 minutos para analisar seu plano de ação específico 
 https://seu-calendario.com/agendamento
 `;
 
-                try {
-                    await fetch('https://formsubmit.co/contato@femo.com.br', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({
-                            'email': formData.userDetails['email'],
-                            'name': formData.userDetails['full-name'],
-                            'specialty': formData.userDetails['specialty'],
-                            'city': formData.userDetails['city-state'],
-                            'whatsapp': formData.userDetails['whatsapp'],
-                            'general_score': formData.generalScore,
-                            'diagnosis_title': diagnosis.title,
-                            'pillar_scores': JSON.stringify(formData.pillarScores),
-                            'weakest_pillar': diagnosis.weakestPillar,
-                            'message': emailContent,
-                            '_subject': `Diagnóstico Recebido: ${formData.userDetails['full-name']} - Score ${formData.generalScore}/100`
-                        })
-                    });
-                } catch (error) {
-                    console.error('Erro ao enviar os dados:', error);
-                } finally {
-                    currentStep++;
-                    renderStep();
-                }
+                // Enviar dados sem bloquear o fluxo
+                fetch('https://formsubmit.co/contato@femo.com.br', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        'email': formData.userDetails['email'],
+                        'name': formData.userDetails['full-name'],
+                        'specialty': formData.userDetails['specialty'],
+                        'city': formData.userDetails['city-state'],
+                        'whatsapp': formData.userDetails['whatsapp'],
+                        'general_score': formData.generalScore,
+                        'diagnosis_title': diagnosis.title,
+                        'pillar_scores': JSON.stringify(formData.pillarScores),
+                        'weakest_pillar': diagnosis.weakestPillar,
+                        'message': emailContent,
+                        '_subject': `Diagnóstico Recebido: ${formData.userDetails['full-name']} - Score ${formData.generalScore}/100`
+                    })
+                }).catch(err => console.error('Erro ao enviar:', err));
+
+                // Avançar imediatamente sem esperar resposta
+                currentStep++;
+                renderStep();
             };
 
             const addRippleEffect = (btn) => {
