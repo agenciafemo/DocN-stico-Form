@@ -620,7 +620,6 @@
                 } else if (stepData.type === 'final') {
                     stepTitle = 'Finalização';
                     progressPercentage = 100;
-                    const email = formData.userDetails['email'] || 'seu email';
                     const whatsapp = formData.userDetails['whatsapp'] || 'seu WhatsApp';
                     contentHtml = `
                         <div class="text-center max-w-2xl mx-auto">
@@ -629,28 +628,28 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h1 class="text-4xl sm:text-5xl font-bold text-brand-text-dark mb-6">Sucesso! 🎉</h1>
-                            <p class="text-xl text-gray-600 mb-8">Seu diagnóstico foi enviado com sucesso para <strong>${email}</strong></p>
+                            <h1 class="text-4xl sm:text-5xl font-bold text-brand-text-dark mb-6">Diagnóstico Concluído! 🎉</h1>
+                            <p class="text-xl text-gray-600 mb-8">Seu diagnóstico de maturidade comercial foi gerado com sucesso!</p>
 
                             <div class="bg-brand-gold/10 border border-brand-gold/30 rounded-lg p-8 mb-8 text-left">
-                                <h2 class="text-lg font-bold text-brand-text-dark mb-4">Próximos passos:</h2>
+                                <h2 class="text-lg font-bold text-brand-text-dark mb-4">O que fazer agora:</h2>
                                 <ul class="space-y-3 text-gray-700">
                                     <li class="flex items-start gap-3">
                                         <span class="text-brand-gold font-bold">✓</span>
-                                        <span>Verifique seu email (e spam) para receber seu diagnóstico completo</span>
+                                        <span>Use o botão <strong>Compartilhar pelo WhatsApp</strong> para salvar seu diagnóstico</span>
                                     </li>
                                     <li class="flex items-start gap-3">
                                         <span class="text-brand-gold font-bold">✓</span>
-                                        <span>Nossa equipe entrará em contato pelo WhatsApp <strong>${whatsapp}</strong></span>
+                                        <span>Nossa equipe entrará em contato pelo WhatsApp <strong>${whatsapp}</strong> com orientações personalizadas</span>
                                     </li>
                                     <li class="flex items-start gap-3">
                                         <span class="text-brand-gold font-bold">✓</span>
-                                        <span>Receberá orientações estratégicas personalizadas para seu consultório</span>
+                                        <span>Receberá análise estratégica completa para transformar seu consultório</span>
                                     </li>
                                 </ul>
                             </div>
 
-                            <p class="text-gray-600 text-sm">Obrigado por usar o <strong>DocNóstico</strong>. Estamos aqui para ajudar seu consultório a crescer!</p>
+                            <p class="text-gray-600 text-sm">Obrigado por usar o <strong>DocNóstico</strong>. Estamos aqui para ajudar seu consultório a crescer! 🚀</p>
                         </div>
                     `;
                 } else {
@@ -722,7 +721,7 @@
                             whatsappBtn.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
-                                const diagText = `*DIAGNÓSTICO DE MATURIDADE COMERCIAL*\n\n*${diagnosis.title}*\n\n*Score: ${formData.generalScore}/100*\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
+                                const diagText = `*DIAGNÓSTICO DE MATURIDADE COMERCIAL*\n\n*${diagnosis.title}*\n\n*Score: ${formData.generalScore}/100*\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}\n\n---\n\n📊 *Gere seu próprio diagnóstico:*\nhttps://docnosticoform.vercel.app\n\n#DocNóstico #ConsultórioH2H #AlturaPerformance`;
                                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(diagText)}`;
                                 window.open(whatsappUrl, '_blank');
                             });
