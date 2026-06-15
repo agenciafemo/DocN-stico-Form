@@ -922,7 +922,8 @@
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
                 try {
-                    const response = await fetch('https://formspree.io/f/mdavbpab', {
+                    // Email 1: Para o usuário
+                    const response1 = await fetch('https://formspree.io/f/mdavbpab', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -933,16 +934,30 @@
                             whatsapp: formData.userDetails['whatsapp'],
                             score: formData.generalScore,
                             diagnosis: diagText,
-                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                            _replyto: formData.userDetails['email'],
-                            _to: formData.userDetails['email'],
-                            _cc: 'contato@femo.com.br'
+                            _subject: `Seu Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
+                            _to: formData.userDetails['email']
                         })
                     });
 
-                    if (response.ok) return true;
+                    // Email 2: Para o admin
+                    const response2 = await fetch('https://formspree.io/f/mdavbpab', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: formData.userDetails['full-name'],
+                            email: 'contato@femo.com.br',
+                            specialty: formData.userDetails['specialty'],
+                            city: formData.userDetails['city-state'],
+                            whatsapp: formData.userDetails['whatsapp'],
+                            score: formData.generalScore,
+                            diagnosis: diagText,
+                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`
+                        })
+                    });
 
-                    console.error('Erro ao enviar:', await response.json());
+                    if (response1.ok && response2.ok) return true;
+
+                    console.error('Erro ao enviar:', response1.ok ? await response2.json() : await response1.json());
                     return false;
                 } catch (err) {
                     console.error('Erro de rede:', err);
