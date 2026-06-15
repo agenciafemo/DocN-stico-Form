@@ -922,21 +922,15 @@
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
                 try {
+                    const messageContent = `NOME: ${formData.userDetails['full-name']}\nESPECIALIDADE: ${formData.userDetails['specialty']}\nCIDADE: ${formData.userDetails['city-state']}\nWHATSAPP: ${formData.userDetails['whatsapp']}\n\n${diagText}`;
+
                     // Email 1: Para o usuário
                     const response1 = await fetch('https://formspree.io/f/mdavbpab', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            name: formData.userDetails['full-name'],
                             email: formData.userDetails['email'],
-                            specialty: formData.userDetails['specialty'],
-                            city: formData.userDetails['city-state'],
-                            whatsapp: formData.userDetails['whatsapp'],
-                            score: formData.generalScore,
-                            message: diagText,
-                            _subject: `Seu Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                            _to: formData.userDetails['email'],
-                            _fields: 'name,email,specialty,city,whatsapp,score,message'
+                            message: messageContent
                         })
                     });
 
@@ -945,15 +939,8 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            name: formData.userDetails['full-name'],
                             email: 'contato@femo.com.br',
-                            specialty: formData.userDetails['specialty'],
-                            city: formData.userDetails['city-state'],
-                            whatsapp: formData.userDetails['whatsapp'],
-                            score: formData.generalScore,
-                            message: diagText,
-                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                            _fields: 'name,email,specialty,city,whatsapp,score,message'
+                            message: messageContent
                         })
                     });
 
