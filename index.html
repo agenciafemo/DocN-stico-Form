@@ -645,6 +645,7 @@
                     `;
                     const startBtn = document.getElementById('start-intro-btn');
                     startBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         const rect = startBtn.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
@@ -661,6 +662,7 @@
                     navButtons.innerHTML = `<button id="continue-dashboard-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Prosseguir &rarr;</button>`;
                     const dashBtn = document.getElementById('continue-dashboard-btn');
                     dashBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         const rect = dashBtn.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
@@ -710,6 +712,7 @@
                         navButtons.classList.add('animate-fade-in');
                         const diagBtn = document.getElementById('view-diagnosis-btn');
                         diagBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
                             const rect = diagBtn.getBoundingClientRect();
                             const x = e.clientX - rect.left;
                             const y = e.clientY - rect.top;
@@ -728,6 +731,7 @@
                     navButtons.innerHTML = `<button id="final-submit-btn" class="shimmer-btn relative overflow-hidden w-full bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
                     const submitBtn = document.getElementById('final-submit-btn');
                     submitBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         const rect = submitBtn.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
