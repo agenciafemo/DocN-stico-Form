@@ -802,8 +802,7 @@
                     const success = await submitData();
 
                     if (success) {
-                        const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
-                        window.location.href = `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`;
+                        setTimeout(() => { currentStep++; renderStep(); }, 300);
                     } else {
                         showValidationError('Ocorreu um erro ao enviar. Por favor, tente novamente em alguns instantes.');
                         submitBtn.disabled = false;
@@ -1123,43 +1122,7 @@
                 `
             });
 
-            // Tela de Captura
-            steps.push({
-                type: 'capture',
-                title: 'Dados para Contato',
-                content: `
-                    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2">Seu diagnóstico está pronto.</h1>
-                    <p class="text-center text-gray-600 font-light mb-8">Para visualizar, preencha seus dados:</p>
-                    <div class="space-y-6">
-                        <div>
-                            <label for="full-name" class="block text-sm font-medium text-brand-text-dark">Nome completo</label>
-                            <input type="text" name="full-name" id="full-name" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                        </div>
-                        <div>
-                            <label for="specialty" class="block text-sm font-medium text-brand-text-dark">Especialidade médica</label>
-                            <input type="text" name="specialty" id="specialty" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                        </div>
-                        <div>
-                            <label for="city-state" class="block text-sm font-medium text-brand-text-dark">Cidade / Estado</label>
-                            <input type="text" name="city-state" id="city-state" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-brand-text-dark">E-mail</label>
-                            <input type="email" name="email" id="email" data-validate="true" placeholder="seu@email.com.br" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                        </div>
-                        <div>
-                            <label for="whatsapp" class="block text-sm font-medium text-brand-text-dark">WhatsApp</label>
-                            <input type="text" name="whatsapp" id="whatsapp" data-validate="true" placeholder="(00) 00000-0000" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                        </div>
-                    </div>
-                    <div class="mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
-                        <span>Seus dados estão protegidos. Zero spam.</span>
-                    </div>
-                `
-            });
-
-            // Dashboard de Resultados (APÓS captura de dados)
+            // Dashboard de Resultados (ANTES de captura)
             steps.push({
                 type: 'dashboard',
                 content: function(pillarScores, generalScore) {
@@ -1220,13 +1183,75 @@
                 }
             });
 
+            // Tela de Captura (APÓS dashboard)
+            steps.push({
+                type: 'capture',
+                title: 'Dados para Contato',
+                content: `
+                    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2">Seus dados para contato</h1>
+                    <p class="text-center text-gray-600 font-light mb-8">Preencha para receber seu diagnóstico por email:</p>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="full-name" class="block text-sm font-medium text-brand-text-dark">Nome completo</label>
+                            <input type="text" name="full-name" id="full-name" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="specialty" class="block text-sm font-medium text-brand-text-dark">Especialidade médica</label>
+                            <input type="text" name="specialty" id="specialty" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="city-state" class="block text-sm font-medium text-brand-text-dark">Cidade / Estado</label>
+                            <input type="text" name="city-state" id="city-state" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-brand-text-dark">E-mail</label>
+                            <input type="email" name="email" id="email" data-validate="true" placeholder="seu@email.com.br" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="whatsapp" class="block text-sm font-medium text-brand-text-dark">WhatsApp</label>
+                            <input type="text" name="whatsapp" id="whatsapp" data-validate="true" placeholder="(00) 00000-0000" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                        <span>Seus dados estão protegidos. Zero spam.</span>
+                    </div>
+                `
+            });
+
+
             // Tela Final
             steps.push({
                 type: 'final',
                 content: `
-                    <div class="text-center">
-                        <h1 class="text-3xl sm:text-4xl font-bold text-green-600 mb-4">Obrigado!</h1>
-                        <p class="text-gray-600 font-light max-w-lg mx-auto">Obrigado por compartilhar suas informações. Nossa equipe de especialistas entrará em contato em breve pelo WhatsApp com sua análise completa e direcionamentos estratégicos.</p>
+                    <div class="text-center max-w-2xl mx-auto">
+                        <div class="mb-8">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl font-bold text-brand-text-dark mb-6">Sucesso! 🎉</h1>
+                        <p class="text-xl text-gray-600 mb-8">Seu diagnóstico foi enviado com sucesso para <strong>${formData.userDetails['email']}</strong></p>
+
+                        <div class="bg-brand-gold/10 border border-brand-gold/30 rounded-lg p-8 mb-8 text-left">
+                            <h2 class="text-lg font-bold text-brand-text-dark mb-4">Próximos passos:</h2>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-brand-gold font-bold">✓</span>
+                                    <span>Verifique seu email (e spam) para receber seu diagnóstico completo</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-brand-gold font-bold">✓</span>
+                                    <span>Nossa equipe entrará em contato pelo WhatsApp <strong>${formData.userDetails['whatsapp']}</strong></span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-brand-gold font-bold">✓</span>
+                                    <span>Receberá orientações estratégicas personalizadas para seu consultório</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <p class="text-gray-600 text-sm">Obrigado por usar o <strong>DocNóstico</strong>. Estamos aqui para ajudar seu consultório a crescer!</p>
                     </div>
                 `
             });
