@@ -568,11 +568,16 @@
             const mainFooter = document.getElementById('main-footer');
 
             const renderStep = () => {
+                console.log(`[renderStep] currentStep: ${currentStep}, total steps: ${formSteps.length}`);
                 if (currentStep >= formSteps.length) {
                     console.warn('Fim do formulário atingido');
                     return;
                 }
                 const stepData = formSteps[currentStep];
+                if (!stepData) {
+                    console.error(`Step ${currentStep} não existe`);
+                    return;
+                }
                 const totalQuestions = formSteps.filter(s => s.type === 'question').length;
                 let currentQuestionIndex = formSteps.slice(0, currentStep).filter(s => s.type === 'question').length;
 
