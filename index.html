@@ -856,26 +856,25 @@
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
                 currentStep++;
                 renderStep();
-                setTimeout(() => {
-                    if (typeof emailjs === 'undefined') return;
-                    try {
-                        emailjs.init('DeBvD-W6V6AAkoCm_');
-                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
-                            user_name: formData.userDetails['full-name'],
-                            user_email: formData.userDetails['email'],
-                            general_score: formData.generalScore,
-                            diagnosis_text: diagnosis.paragraph1 + '\n\n' + diagnosis.paragraph2 + '\n\n' + diagnosis.paragraph3
-                        }).catch(e => console.error('Email 1:', e));
-                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
-                            user_name: 'Contato',
-                            user_email: 'contato@femo.com.br',
-                            general_score: formData.generalScore,
-                            diagnosis_text: 'Paciente: ' + formData.userDetails['full-name'] + ', Score: ' + formData.generalScore
-                        }).catch(e => console.error('Email 2:', e));
-                    } catch (error) {
-                        console.error('Erro:', error);
-                    }
-                }, 1000);
+
+                const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
+
+                fetch('https://formsubmit.co/contato@femo.com.br', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        'name': formData.userDetails['full-name'],
+                        'email': formData.userDetails['email'],
+                        'specialty': formData.userDetails['specialty'],
+                        'city': formData.userDetails['city-state'],
+                        'whatsapp': formData.userDetails['whatsapp'],
+                        'score': formData.generalScore,
+                        'message': diagText,
+                        '_subject': `Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
+                        '_cc': formData.userDetails['email'],
+                        '_captcha': 'false'
+                    })
+                }).catch(err => console.error('Erro email:', err));
             };
 
             const addRippleEffect = (btn) => {
