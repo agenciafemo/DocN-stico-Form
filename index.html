@@ -1007,9 +1007,10 @@ https://seu-calendario.com/agendamento
             }
 
             // Parágrafo 2: Gargalo Principal
-            const weakestPillar = Object.keys(pillarScores).reduce((a, b) =>
+            const keys = Object.keys(pillarScores);
+            const weakestPillar = keys.length > 0 ? keys.reduce((a, b) =>
                 pillarScores[a] < pillarScores[b] ? a : b
-            );
+            ) : 'Marketing e Vendas';
             let p2 = '';
             if (weakestPillar === 'Marketing e Vendas') {
                 p2 = 'Seu maior gargalo está na atração e conversão de pacientes. Você é refém de indicações passivas, não tem canais próprios de capta, e atraí muitos curiosos que negociam preço.';
@@ -1173,9 +1174,10 @@ https://seu-calendario.com/agendamento
                 type: 'dashboard',
                 content: function(pillarScores, generalScore) {
                     const status = getOperationStatus(generalScore);
-                    const weakestPillar = Object.keys(pillarScores).reduce((a, b) =>
+                    const keys = Object.keys(pillarScores);
+                    const weakestPillar = keys.length > 0 ? keys.reduce((a, b) =>
                         pillarScores[a] < pillarScores[b] ? a : b
-                    );
+                    ) : 'Marketing e Vendas';
 
                     return `
                         <div class="text-center max-w-3xl mx-auto">
