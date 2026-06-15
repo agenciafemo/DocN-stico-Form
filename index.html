@@ -606,6 +606,10 @@
                     stepTitle = 'Seu diagnóstico está pronto';
                     progressPercentage = 100;
                     contentHtml = stepData.content;
+                } else if (stepData.type === 'final') {
+                    stepTitle = 'Finalização';
+                    progressPercentage = 100;
+                    contentHtml = typeof stepData.content === 'function' ? stepData.content() : stepData.content;
                 } else {
                     stepTitle = 'Finalização';
                     progressPercentage = 100;
