@@ -550,6 +550,8 @@
             // =================================================================
 
             const formSteps = buildFormSteps(); // Initialize steps after questions are loaded.
+            console.log(`[Init] Total steps carregados: ${formSteps.length}`);
+            formSteps.forEach((step, i) => console.log(`  Step ${i}: ${step.type}`));
 
             const formData = {
                 userDetails: {},
