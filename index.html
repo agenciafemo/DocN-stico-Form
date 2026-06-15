@@ -664,20 +664,27 @@
                 }
                 if (stepData.type === 'dashboard') {
                     navButtons.innerHTML = `<button id="continue-dashboard-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Prosseguir &rarr;</button>`;
-                    const dashBtn = document.getElementById('continue-dashboard-btn');
-                    dashBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const rect = dashBtn.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        const ripple = document.createElement('span');
-                        ripple.className = 'ripple';
-                        ripple.style.width = ripple.style.height = '30px';
-                        ripple.style.left = x + 'px';
-                        ripple.style.top = y + 'px';
-                        dashBtn.appendChild(ripple);
-                        setTimeout(() => { currentStep++; renderStep(); }, 300);
-                    });
+                    setTimeout(() => {
+                        const dashBtn = document.getElementById('continue-dashboard-btn');
+                        if (dashBtn) {
+                            dashBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                console.log('Botão Prosseguir clicado');
+                                const rect = dashBtn.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const y = e.clientY - rect.top;
+                                const ripple = document.createElement('span');
+                                ripple.className = 'ripple';
+                                ripple.style.width = ripple.style.height = '30px';
+                                ripple.style.left = x + 'px';
+                                ripple.style.top = y + 'px';
+                                dashBtn.appendChild(ripple);
+                                setTimeout(() => { currentStep++; renderStep(); }, 300);
+                            });
+                        } else {
+                            console.error('Botão não encontrado');
+                        }
+                    }, 100);
                 }
                 if (stepData.type === 'processing') {
                     // Sequential loading animation with smooth transitions
