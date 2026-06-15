@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,54 +6,62 @@ export default async function handler(req, res) {
   }
 
   const { name, email, score, diagnosis } = req.body;
+
   try {
-    // A chave da API deve ser uma variável de ambiente para segurança
-    const apiKey = process.env.RESEND_API_KEY;
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const fromEmail = process.env.RESEND_FROM_EMAIL;
+    const transporter = nodemailer.createTransport({
+      host: 'mail.femo.com.br',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'contato@femo.com.br',
+        pass: 'Fmo1320@13femo'
+      }
+    });
 
-    if (!apiKey) {
-      console.error('A variável de ambiente RESEND_API_KEY não foi configurada.');
-      return res.status(500).json({ error: 'Erro de configuração do servidor.', message: 'A chave da API de e-mail não foi encontrada.' });
-    }
-    if (!adminEmail) {
-      console.error('A variável de ambiente ADMIN_EMAIL não foi configurada.');
-      return res.status(500).json({ error: 'Erro de configuração do servidor.', message: 'O e-mail do administrador não foi encontrado.' });
-    }
-    if (!fromEmail) {
-      console.error('A variável de ambiente RESEND_FROM_EMAIL não foi configurada.');
-      return res.status(500).json({ error: 'Erro de configuração do servidor.', message: 'O e-mail remetente não foi encontrado.' });
-    }
+    const diagnosisHtml = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 680px; margin: auto; border: 1px solid #e0e0e0; padding: 30px; border-radius: 12px; background-color: #fdfdfd;">
+        <img src="https://i.imgur.com/k9g4gU7.png" alt="Logo da Clínica" style="max-width: 180px; margin: 0 auto 25px auto; display: block;">
 
-    const resend = new Resend(apiKey);
+        <h1 style="color: #623d28; text-align: center; border-bottom: 2px solid #f1b302; padding-bottom: 10px; margin-bottom: 25px;">Seu Diagnóstico DocNóstico</h1>
 
-    const emailPayloads = [
-      // Email para o usuário
-      {
-        from: fromEmail,
-        to: email,
-        subject: `Seu Diagnóstico DocNóstico - Score ${score}/100`,
-        html: `<h2>Olá ${name},</h2><p>${diagnosis.replace(/\n/g, '<br>')}</p>`,
-      },
-      // Email para o admin
-      {
-        from: fromEmail,
-        to: adminEmail,
-        subject: `Novo Diagnóstico: ${name} (${score}/100)`,
-        html: `<h3>${name}</h3><p>Email: ${email}</p><p>Score: ${score}/100</p><p>${diagnosis.replace(/\n/g, '<br>')}</p>`,
-      },
-    ];
+        <p style="font-size: 16px;">Olá, <strong>${name}</strong>,</p>
+        <p style="font-size: 16px; line-height: 1.6;">Obrigado por completar a análise. Este é o seu diagnóstico de maturidade comercial.</p>
 
-    const { data, error } = await resend.batch.send(emailPayloads);
+        <div style="background-color: #f3edd833; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #f1b302;">
+          <h2 style="margin-top: 0; color: #623d28;">Score Geral</h2>
+          <p><strong>${score} / 100</strong></p>
+        </div>
 
-    if (error) {
-      console.error('Falha ao enviar e-mails em lote via Resend:', error);
-      return res.status(500).json({ error: 'Falha ao enviar e-mails.', details: error });
-    } else {
-      return res.status(200).json({ success: true, data });
-    }
+        <div style="margin: 30px 0;">
+          <h2 style="color: #623d28; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Análise</h2>
+          <p style="line-height: 1.7; white-space: pre-wrap;">${diagnosis}</p>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+        <p style="font-size: 12px; color: #888; text-align: center;">Este é um e-mail automático. Nossa equipe entrará em contato em breve.</p>
+      </div>
+    `;
+
+    // Email para o usuário
+    await transporter.sendMail({
+      from: 'contato@femo.com.br',
+      to: email,
+      subject: `Seu Diagnóstico DocNóstico - Score ${score}/100`,
+      html: diagnosisHtml
+    });
+
+    // Email para o admin
+    await transporter.sendMail({
+      from: 'contato@femo.com.br',
+      to: 'contato@femo.com.br',
+      subject: `Novo Diagnóstico: ${name} (${score}/100)`,
+      html: `<p><strong>Novo diagnóstico recebido:</strong></p><p>Nome: ${name}<br>Email: ${email}<br>Score: ${score}/100</p><p style="white-space: pre-wrap;">${diagnosis}</p>`
+    });
+
+    return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Erro:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor.', message: error.message });
+    console.error('Erro ao enviar email:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
