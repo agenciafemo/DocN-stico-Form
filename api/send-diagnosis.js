@@ -1,5 +1,3 @@
-const nodemailer = require('nodemailer');
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
@@ -8,32 +6,40 @@ module.exports = async function handler(req, res) {
   const { name, email, specialty, city, whatsapp, score, diagnosis } = req.body;
 
   console.log('[send-diagnosis] Recebido:', { name, email });
-  console.log('[send-diagnosis] Variáveis de env:', {
-    brevoEmail: process.env.BREVO_EMAIL ? 'OK' : 'MISSING',
-    brevoKey: process.env.BREVO_SMTP_KEY ? 'OK' : 'MISSING'
-  });
 
-  if (!process.env.BREVO_EMAIL || !process.env.BREVO_SMTP_KEY) {
+  if (!process.env.BREVO_API_KEY) {
     return res.status(500).json({ error: 'Variáveis de ambiente não configuradas' });
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.BREVO_EMAIL,
-      pass: process.env.BREVO_SMTP_KEY
+  const sendEmail = async (toEmail, subject, htmlContent) => {
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY
+      },
+      body: JSON.stringify({
+        to: [{ email: toEmail }],
+        sender: { email: 'aed6ab001@smtp-brevo.com', name: 'DocNóstico' },
+        subject: subject,
+        htmlContent: htmlContent
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Brevo API Error: ${JSON.stringify(error)}`);
     }
-  });
+
+    return response.json();
+  };
 
   try {
     console.log('[send-diagnosis] Enviando email para usuário:', email);
-    await transporter.sendMail({
-      from: process.env.BREVO_EMAIL,
-      to: email,
-      subject: `Seu Diagnóstico de Maturidade: ${score}/100`,
-      html: `
+    await sendEmail(
+      email,
+      `Seu Diagnóstico de Maturidade: ${score}/100`,
+      `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #623d28;">Seu Diagnóstico chegou!</h1>
           <p>Olá <strong>${name}</strong>,</p>
@@ -58,16 +64,15 @@ module.exports = async function handler(req, res) {
           </div>
         </div>
       `
-    });
+    );
 
     console.log('[send-diagnosis] Email usuário enviado com sucesso');
 
     console.log('[send-diagnosis] Enviando email para admin');
-    await transporter.sendMail({
-      from: process.env.BREVO_EMAIL,
-      to: 'contato@femo.com.br',
-      subject: `Novo Diagnóstico: ${name} (${score}/100)`,
-      html: `
+    await sendEmail(
+      'contato@femo.com.br',
+      `Novo Diagnóstico: ${name} (${score}/100)`,
+      `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #623d28;">Novo Diagnóstico Enviado</h1>
 
@@ -87,7 +92,7 @@ module.exports = async function handler(req, res) {
           </div>
         </div>
       `
-    });
+    );
 
     console.log('[send-diagnosis] Email admin enviado com sucesso');
     return res.status(200).json({ success: true, message: 'Diagnóstico enviado com sucesso!' });
