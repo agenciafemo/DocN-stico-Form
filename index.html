@@ -843,102 +843,45 @@
                     .replace(/(\d{5})(\d)/, '$1-$2');
             };
 
-            const submitData = async () => {
+            const submitData = () => {
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
 
                 // Avançar imediatamente para dashboard
                 currentStep++;
                 renderStep();
 
-                // Enviar emails em background (sem bloquear)
-                if (typeof emailjs !== 'undefined') {
-                    try {
-                        console.log('EmailJS inicializando...');
-                        emailjs.init('DeBvD-W6V6AAkoCm_');
-                        console.log('EmailJS inicializado com sucesso');
+                // Enviar emails em background com retry
+                const sendEmails = () => {
+                    if (typeof emailjs === 'undefined') {
+                        console.log('Aguardando EmailJS...');
+                        setTimeout(sendEmails, 500);
+                        return;
+                    }
 
-                        // ENVIO 1: Para o email do usuário
-                        console.log('Enviando para:', formData.userDetails['email']);
+                    try {
+                        emailjs.init('DeBvD-W6V6AAkoCm_');
+
+                        // Email para usuário
                         emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
                             user_name: formData.userDetails['full-name'],
                             user_email: formData.userDetails['email'],
                             general_score: formData.generalScore,
-                            diagnosis_text: `DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
+                            diagnosis_text: `DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico\n\nDADOS:\nNome: ${formData.userDetails['full-name']}\nEspecialidade: ${formData.userDetails['specialty']}\nCidade/Estado: ${formData.userDetails['city-state']}\nE-mail: ${formData.userDetails['email']}\nWhatsApp: ${formData.userDetails['whatsapp']}\n\nSCORE GERAL: ${formData.generalScore}/100\n\nTÍTULO: ${diagnosis.title}\n\nBREAKDOWN:\n${Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join('\n')}\n\nGARGALO: ${diagnosis.weakestPillar}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`
+                        }).catch(err => console.error('Erro usuário:', err));
 
-DADOS:
-Nome: ${formData.userDetails['full-name']}
-Especialidade: ${formData.userDetails['specialty']}
-Cidade/Estado: ${formData.userDetails['city-state']}
-E-mail: ${formData.userDetails['email']}
-WhatsApp: ${formData.userDetails['whatsapp']}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 SCORE GERAL: ${formData.generalScore}/100
-
-TÍTULO: ${diagnosis.title}
-
-BREAKDOWN POR PILAR:
-${Object.entries(formData.pillarScores).map(([p, s]) => `• ${p}: ${s}%`).join('\n')}
-
-⚠️ GARGALO PRINCIPAL: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-ANÁLISE PERSONALIZADA:
-
-${diagnosis.paragraph1}
-
-${diagnosis.paragraph2}
-
-${diagnosis.paragraph3}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔓 PRÓXIMO PASSO:
-
-Doutor(a), nós mapeamos visualmente seu breakdown e identificamos onde a sua operação está sangrando. Como o seu pilar de ${diagnosis.weakestPillar} apresentou o menor desempenho (${formData.pillarScores[diagnosis.weakestPillar]}%), nós reservamos um horário exclusivo para analisar seu questionário de forma individualizada e gratuita por 25 minutos.
-
-Clique no link para agendar:
-https://seu-calendario.com/agendamento`
-                        }).then(response => {
-                            console.log('Email enviado para usuário com sucesso:', response);
-                        }).catch(err => {
-                            console.error('Erro ao enviar para usuário:', err);
-                        });
-
-                        // ENVIO 2: Para contato@femo.com.br (com dados completos)
-                        console.log('Enviando para contato@femo.com.br');
+                        // Email para contato
                         emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
-                            user_name: 'Contato - ' + formData.userDetails['full-name'],
+                            user_name: formData.userDetails['full-name'],
                             user_email: 'contato@femo.com.br',
                             general_score: formData.generalScore,
-                            diagnosis_text: `NOVO DIAGNÓSTICO RECEBIDO
-
-Paciente: ${formData.userDetails['full-name']}
-Especialidade: ${formData.userDetails['specialty']}
-Cidade/Estado: ${formData.userDetails['city-state']}
-E-mail: ${formData.userDetails['email']}
-WhatsApp: ${formData.userDetails['whatsapp']}
-
-Score Geral: ${formData.generalScore}/100
-Título: ${diagnosis.title}
-
-Breakdown:
-${Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join('\n')}
-
-Gargalo Principal: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)`
-                        }).then(response => {
-                            console.log('Email enviado para contato com sucesso:', response);
-                        }).catch(err => {
-                            console.error('Erro ao enviar para contato:', err);
-                        });
+                            diagnosis_text: `Novo diagnóstico recebido:\n\nPaciente: ${formData.userDetails['full-name']}\nEspecialidade: ${formData.userDetails['specialty']}\nCidade: ${formData.userDetails['city-state']}\nEmail: ${formData.userDetails['email']}\nWhatsApp: ${formData.userDetails['whatsapp']}\n\nScore: ${formData.generalScore}/100\nGargalo: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)`
+                        }).catch(err => console.error('Erro contato:', err));
                     } catch (error) {
-                        console.error('Erro ao enviar emails:', error);
+                        console.error('Erro:', error);
                     }
-                } else {
-                    console.warn('EmailJS não carregou');
-                }
+                };
+
+                sendEmails();
             };
 
             const addRippleEffect = (btn) => {
