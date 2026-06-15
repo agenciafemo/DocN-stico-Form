@@ -864,7 +864,11 @@
             };
 
             const submitData = async () => {
-                const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
+                // Recalcular scores para garantir que estão corretos
+                const pillarScores = calculatePillarScores(formData.answers);
+                const generalScore = calculateGeneralScore(pillarScores);
+
+                const diagnosis = generateDiagnosis(generalScore, pillarScores, formData.userDetails, formData.answers);
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
                 try {
