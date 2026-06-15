@@ -13,6 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
+    <!-- EmailJS Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js"></script>
+
     <script>
         // Configuração personalizada para estender o tema do Tailwind CSS
         tailwind.config = {
@@ -840,10 +843,18 @@
                     .replace(/(\d{5})(\d)/, '$1-$2');
             };
 
-            const generateEmailHTML = (diagnosis) => {
-                const status = getOperationStatus(formData.generalScore);
-                return `
-DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
+            const submitData = async () => {
+                const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
+
+                // EmailJS configuration
+                emailjs.init('DeBvD-W6V6AAkoCm_');
+
+                // ENVIO 1: Para o email do usuário
+                emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                    user_name: formData.userDetails['full-name'],
+                    user_email: formData.userDetails['email'],
+                    general_score: formData.generalScore,
+                    diagnosis_text: `DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
 
 DADOS:
 Nome: ${formData.userDetails['full-name']}
@@ -854,27 +865,18 @@ WhatsApp: ${formData.userDetails['whatsapp']}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📊 SCORE GERAL: ${formData.generalScore}/100 - ${status.status}
+📊 SCORE GERAL: ${formData.generalScore}/100
 
 TÍTULO: ${diagnosis.title}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 BREAKDOWN POR PILAR:
-
 ${Object.entries(formData.pillarScores).map(([p, s]) => `• ${p}: ${s}%`).join('\n')}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ ALERTA DE GARGALO:
-
-Seu maior risco operacional e perda de lucratividade hoje estão concentrados no pilar de ${diagnosis.weakestPillar} com apenas ${formData.pillarScores[diagnosis.weakestPillar]}% de eficiência.
+⚠️ GARGALO PRINCIPAL: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ANÁLISE PERSONALIZADA:
-
-${diagnosis.title}
 
 ${diagnosis.paragraph1}
 
@@ -886,51 +888,32 @@ ${diagnosis.paragraph3}
 
 🔓 PRÓXIMO PASSO:
 
-Doutor(a), nós mapeamos visualmente seu breakdown e identificamos onde a sua operação está sangrando. Porém, os números isolados não mudam o seu jogo.
+Doutor(a), nós mapeamos visualmente seu breakdown e identificamos onde a sua operação está sangrando. Como o seu pilar de ${diagnosis.weakestPillar} apresentou o menor desempenho (${formData.pillarScores[diagnosis.weakestPillar]}%), nós reservamos um horário exclusivo para analisar seu questionário de forma individualizada e gratuita por 25 minutos.
 
-Como o seu pilar de ${diagnosis.weakestPillar} apresentou o menor desempenho (${formData.pillarScores[diagnosis.weakestPillar]}% de eficiência), nós reservamos um horário exclusivo na nossa agenda esta semana para analisar o seu questionário de forma individualizada e gratuita por 25 minutos. Vamos te entregar o plano exato para estancar essa perda de lucro.
-
-Clique no link abaixo, selecione o melhor horário e garanta a sua vaga:
-
-[AGENDAR REUNIÃO]
-https://seu-calendario.com/agendamento
-`;
-            };
-
-            const submitData = async () => {
-                const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
-                const emailContent = generateEmailHTML(diagnosis);
-
-                // ENVIO 1: Para o email do usuário
-                fetch('https://formsubmit.co/' + formData.userDetails['email'], {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        'name': formData.userDetails['full-name'],
-                        'message': emailContent,
-                        '_subject': `Seu Diagnóstico DocNóstico - Score ${formData.generalScore}/100`,
-                        '_captcha': 'false'
-                    })
+Clique no link para agendar:
+https://seu-calendario.com/agendamento`
                 }).catch(err => console.error('Erro ao enviar para usuário:', err));
 
-                // ENVIO 2: Para contato@femo.com.br (com dados completos para acompanhamento)
-                fetch('https://formsubmit.co/contato@femo.com.br', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        'email': formData.userDetails['email'],
-                        'name': formData.userDetails['full-name'],
-                        'specialty': formData.userDetails['specialty'],
-                        'city': formData.userDetails['city-state'],
-                        'whatsapp': formData.userDetails['whatsapp'],
-                        'general_score': formData.generalScore,
-                        'diagnosis_title': diagnosis.title,
-                        'weakest_pillar': diagnosis.weakestPillar,
-                        'pillar_scores': Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join(' | '),
-                        'message': emailContent,
-                        '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} - Score ${formData.generalScore}/100`,
-                        '_captcha': 'false'
-                    })
+                // ENVIO 2: Para contato@femo.com.br (com dados completos)
+                emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                    user_name: 'Contato - ' + formData.userDetails['full-name'],
+                    user_email: 'contato@femo.com.br',
+                    general_score: formData.generalScore,
+                    diagnosis_text: `NOVO DIAGNÓSTICO RECEBIDO
+
+Paciente: ${formData.userDetails['full-name']}
+Especialidade: ${formData.userDetails['specialty']}
+Cidade/Estado: ${formData.userDetails['city-state']}
+E-mail: ${formData.userDetails['email']}
+WhatsApp: ${formData.userDetails['whatsapp']}
+
+Score Geral: ${formData.generalScore}/100
+Título: ${diagnosis.title}
+
+Breakdown:
+${Object.entries(formData.pillarScores).map(([p, s]) => `${p}: ${s}%`).join('\n')}
+
+Gargalo Principal: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)`
                 }).catch(err => console.error('Erro ao enviar para contato:', err));
 
                 // Avançar imediatamente sem esperar resposta
