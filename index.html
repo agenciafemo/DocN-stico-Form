@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <!-- EmailJS Library -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js" defer></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js" defer></script>
 
     <script>
         // Configuração personalizada para estender o tema do Tailwind CSS
@@ -851,15 +851,16 @@
                 renderStep();
 
                 // Enviar emails em background (sem bloquear)
-                if (typeof emailjs !== 'undefined') {
+                const emailjsLib = window.emailjs || emailjs;
+                if (typeof emailjsLib !== 'undefined') {
                     try {
                         console.log('EmailJS inicializando...');
-                        emailjs.init('DeBvD-W6V6AAkoCm_');
+                        emailjsLib.init('DeBvD-W6V6AAkoCm_');
                         console.log('EmailJS inicializado com sucesso');
 
                         // ENVIO 1: Para o email do usuário
                         console.log('Enviando para:', formData.userDetails['email']);
-                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                        emailjsLib.send('service_lsoz5zv', 'template_1q65yhi', {
                             user_name: formData.userDetails['full-name'],
                             user_email: formData.userDetails['email'],
                             general_score: formData.generalScore,
@@ -909,7 +910,7 @@ https://seu-calendario.com/agendamento`
 
                         // ENVIO 2: Para contato@femo.com.br (com dados completos)
                         console.log('Enviando para contato@femo.com.br');
-                        emailjs.send('service_lsoz5zv', 'template_1q65yhi', {
+                        emailjsLib.send('service_lsoz5zv', 'template_1q65yhi', {
                             user_name: 'Contato - ' + formData.userDetails['full-name'],
                             user_email: 'contato@femo.com.br',
                             general_score: formData.generalScore,
