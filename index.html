@@ -13,18 +13,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-    <!-- EmailJS Library v4 -->
-    <script type="text/javascript" src="https://unpkg.com/@emailjs/browser@4/dist/index.min.js" defer></script>
-    <script>
-        window.addEventListener('load', () => {
-            if (typeof emailjs !== 'undefined') {
-                console.log('✅ EmailJS carregou com sucesso');
-            } else {
-                console.error('❌ EmailJS não carregou');
-            }
-        });
-    </script>
-
     <script>
         // Configuração personalizada para estender o tema do Tailwind CSS
         tailwind.config = {
@@ -481,8 +469,9 @@
         <p class="text-xs text-gray-500 mt-2">Diagnóstico de Maturidade Comercial Médica H2H</p>
     </footer>
 
+    <script src="questions.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => { // This now runs after questions.js is loaded
             // --- EFEITO DE PARTÍCULAS AMBIENTAIS ---
             const ambientParticlesContainer = document.getElementById('ambient-particles');
             if (ambientParticlesContainer) {
@@ -560,6 +549,8 @@
             // MOTOR DO QUESTIONÁRIO
             // =================================================================
 
+            const formSteps = buildFormSteps(); // Initialize steps after questions are loaded.
+
             const formData = {
                 userDetails: {},
                 answers: [],
@@ -568,7 +559,7 @@
                 generalScore: 0
             };
 
-            let currentStep = 0; // Start at the first question
+            let currentStep = 0;
 
             const startQuizBtn = document.getElementById('start-quiz-btn');
             const introScreen = document.getElementById('intro-screen');
@@ -622,7 +613,8 @@
                 }
 
                 quizScreen.innerHTML = `
-                    <div class="w-full max-w-3xl mx-auto">
+                    <form id="quiz-form" action="https://formsubmit.co/contato@femo.com.br" method="POST" class="w-full max-w-3xl mx-auto">
+                        <!-- Campos ocultos para o FormSubmit -->
                         <div class="mb-8">
                             <p class="text-center text-sm font-semibold text-gray-500 mb-2">${stepTitle}</p>
                             <div class="w-full bg-black/10 rounded-full h-2 ${stepData.type !== 'question' ? 'opacity-0' : ''}">
@@ -633,7 +625,7 @@
                             <div id="step-content-wrapper"></div>
                         </div>
                         <div id="nav-buttons" class="mt-8 flex justify-between items-center"></div>
-                    </div>
+                    </form>
                 `;
 
                 const stepContentWrapper = document.getElementById('step-content-wrapper');
@@ -799,10 +791,15 @@
                 if (validateAndSaveCaptureForm()) {
                     const submitBtn = document.getElementById('final-submit-btn');
                     submitBtn.disabled = true;
-                    submitBtn.textContent = 'Processando...';
+                    submitBtn.innerHTML = '<span class="spinner mr-2"></span> Enviando e redirecionando...';
                     submitBtn.style.opacity = '0.7';
                     submitBtn.style.pointerEvents = 'none';
-                    submitData();
+
+                    // A função submitData agora cuida do envio e redirecionamento
+                    // Não precisamos mais de lógica de sucesso/erro aqui
+                    setTimeout(() => {
+                        submitData();
+                    }, 500); // Pequeno delay para o usuário ver o status
                 }
             };
             const validateEmail = (email) => {
@@ -853,22 +850,61 @@
             };
 
             const submitData = () => {
+                const form = document.getElementById('quiz-form');
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
-                currentStep++;
-                renderStep();
+                
+                // --- CONSTRUÇÃO DO E-MAIL EM HTML ---
+                const diagHtml = `
+                    <div style="font-family: Arial, sans-serif; color: #333; max-width: 680px; margin: auto; border: 1px solid #e0e0e0; padding: 30px; border-radius: 12px; background-color: #fdfdfd;">
+                        <img src="https://i.imgur.com/k9g4gU7.png" alt="Logo da Clínica" style="max-width: 180px; margin: 0 auto 25px auto; display: block;">
+                        
+                        <h1 style="color: #623d28; text-align: center; border-bottom: 2px solid #f1b302; padding-bottom: 10px; margin-bottom: 25px;">Seu Diagnóstico DocNóstico</h1>
+                        
+                        <p style="font-size: 16px;">Olá, <strong>${formData.userDetails['full-name']}</strong>,</p>
+                        <p style="font-size: 16px; line-height: 1.6;">Obrigado por completar a análise. Este é o seu diagnóstico de maturidade comercial, que servirá como ponto de partida para o crescimento estratégico do seu consultório.</p>
+                        
+                        <div style="background-color: #f3edd833; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #f1b302;">
+                            <h2 style="margin-top: 0; color: #623d28;">Resumo Estratégico</h2>
+                            <p><strong>Título do Diagnóstico:</strong> ${diagnosis.title}</p>
+                            <p><strong>Score Geral de Maturidade:</strong> <strong>${formData.generalScore} / 100</strong></p>
+                            <p><strong>Principal Oportunidade de Crescimento:</strong> ${diagnosis.weakestPillar} (${diagnosis.pillarScores[diagnosis.weakestPillar]}%)</p>
+                        </div>
 
-                const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
+                        <div style="margin: 30px 0;">
+                            <h2 style="color: #623d28; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Análise Detalhada</h2>
+                            <div style="margin-top: 15px; line-height: 1.7;">
+                                <p><strong>Análise de Faturamento:</strong> ${diagnosis.paragraph1}</p>
+                                <p><strong>Análise do Pilar de Oportunidade:</strong> ${diagnosis.paragraph2}</p>
+                                <p><strong>Próximos Passos Recomendados:</strong> ${diagnosis.paragraph3}</p>
+                            </div>
+                        </div>
 
-                fetch('/api/send-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: formData.userDetails['full-name'],
-                        email: formData.userDetails['email'],
-                        score: formData.generalScore,
-                        diagnosis: diagText
-                    })
-                }).catch(err => console.error('Erro ao enviar:', err));
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+                        <p style="font-size: 12px; color: #888; text-align: center;">Este é um e-mail automático. Nossa equipe de especialistas analisará seus resultados e entrará em contato em breve com direcionamentos estratégicos.</p>
+                        <p style="font-size: 12px; color: #888; text-align: center;"><strong>Dados fornecidos:</strong> Nome: ${formData.userDetails['full-name']}, E-mail: ${formData.userDetails['email']}, WhatsApp: ${formData.userDetails['whatsapp']}.</p>
+                    </div>
+                `;
+
+                // Cria campos ocultos para enviar os dados para o formsubmit.co
+                const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
+                const hiddenFields = {
+                    '_next': `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`, // Redirecionamento dinâmico e personalizado
+                    '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
+                    '_cc': formData.userDetails['email'], // Envia uma cópia para o e-mail do usuário
+                    '_autoresponse': `Olá ${formData.userDetails['full-name']}, recebemos seu diagnóstico! Uma cópia completa foi enviada para o seu e-mail. Em breve, nossa equipe de especialistas entrará em contato.`,
+                    'message': diagHtml, // Usamos o campo 'message' para enviar o HTML completo
+                }
+
+                for (const key in hiddenFields) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = hiddenFields[key];
+                    form.appendChild(input);
+                }
+
+                form.submit();
             };
 
             const addRippleEffect = (btn) => {
@@ -963,13 +999,13 @@
             let p1 = '';
             if (faturamentoAnswer) {
                 if (faturamentoAnswer.score <= 10) {
-                    p1 = `Sua operação fatura até R$ 20.000/mês. O consultório está operando no limite, apenas cobrindo custos básicos. A carga de trabalho é pesada, mas a receita insuficiente torna o modelo insustentável. Você precisa de tração de mercado urgentemente.`;
+                    p1 = `Com um faturamento de até R$ 20.000/mês, a operação está em uma fase inicial, onde a receita cobre os custos essenciais. O desafio agora é criar uma estratégia para aumentar o fluxo de pacientes e a lucratividade, tornando o modelo de negócio mais sustentável e menos dependente de uma alta carga de trabalho.`;
                 } else if (faturamentoAnswer.score <= 40) {
-                    p1 = `Seu faturamento situa-se entre R$ 20.000 e R$ 50.000/mês. Há estabilidade inicial, mas você é o único motor da operação. Qualquer desvio (férias, doença, falta de paciente) impacta diretamente a renda. O risco invisível: o negócio depende 100% de você.`;
+                    p1 = `Na faixa de R$ 20.000 a R$ 50.000/mês, seu consultório alcançou uma estabilidade inicial. O ponto de atenção é a alta dependência da sua presença, o que representa um risco para a continuidade da receita em caso de imprevistos. O próximo passo é começar a estruturar processos para que o negócio não dependa 100% de você.`;
                 } else if (faturamentoAnswer.score <= 70) {
-                    p1 = `Faturamento excelente entre R$ 50.000 e R$ 100.000/mês. Porém, há um perigo crítico: se você tirar 15 dias de férias, o faturamento vai a zero. Seu nome é o negócio, mas o negócio não existe sem você. Processos e CRM ainda são rudimentares.`;
+                    p1 = `Com um faturamento entre R$ 50.000 e R$ 100.000/mês, você atingiu um patamar excelente. O desafio agora é a "gaiola de ouro": o sucesso financeiro está atrelado à sua presença constante. Para romper essa barreira, é fundamental investir em processos e em uma equipe autônoma, transformando seu nome em uma marca que gera valor independentemente da sua agenda.`;
                 } else {
-                    p1 = `Parabéns! Seu faturamento ultrapassa R$ 100.000/mês. Excelente momento financeiro. Porém, a pergunta que vale ouro agora é: "Se eu me afastasse 30 dias, quanto continuaria entrando?" A resposta provavelmente é "zero". Essa é a dor invisível: você tem sucesso financeiro, mas não tem Equity (valor independente de você).`;
+                    p1 = `Parabéns pelo faturamento acima de R$ 100.000/mês! Você construiu uma operação de grande sucesso financeiro. O próximo nível de maturidade é transformar esse sucesso em Equity: um negócio com valor de mercado, que funciona de forma independente. A pergunta-chave é: como fazer a clínica prosperar e gerar receita mesmo se você se ausentar por 30 dias? A resposta está na construção de uma marca forte e processos escaláveis.`;
                 }
             }
 
@@ -978,19 +1014,20 @@
             const weakestPillar = keys.length > 0 ? keys.reduce((a, b) =>
                 pillarScores[a] < pillarScores[b] ? a : b
             ) : 'Marketing e Vendas';
+            const weakestPillarScore = pillarScores[weakestPillar] !== undefined ? pillarScores[weakestPillar] : 0;
             let p2 = '';
             if (weakestPillar === 'Marketing e Vendas') {
-                p2 = `Seu maior gargalo está em Marketing e Vendas (${pillarScores[weakestPillar]}%). Você é refém de indicações passivas, atrái muitos curiosos caçadores de preço no WhatsApp, e não consegue mensurar o retorno real das campanhas. Sem previsibilidade de entrada de pacientes, é impossível crescer com margem saudável.`;
+                p2 = `Sua principal oportunidade de crescimento está em Marketing e Vendas (${weakestPillarScore}%). Atualmente, a captação de pacientes parece depender de canais instáveis, como indicações. Isso resulta em um fluxo de caixa imprevisível e atrai contatos pouco qualificados. A boa notícia é que, ao estruturar uma estratégia de atração digital, é possível conquistar previsibilidade e atrair o perfil de paciente ideal.`;
             } else if (weakestPillar === 'Experiência H2H') {
-                p2 = `Seu maior gargalo está em Experiência H2H (${pillarScores[weakestPillar]}%). A relação com o paciente é fria ou puramente transacional. Faltam materiais sofisticados, acompanhamento humanizado antes/depois da consulta, e experiência sensorial que chancele o preço. O paciente sai da consulta sem se sentir especial.`;
+                p2 = `Sua principal oportunidade de crescimento está na Experiência H2H (${weakestPillarScore}%). A jornada do seu paciente pode ser aprimorada com um atendimento mais acolhedor e materiais que transmitam o alto valor do seu trabalho. Ao criar uma experiência memorável, do primeiro contato ao pós-consulta, você aumenta a percepção de valor, a adesão ao tratamento e a fidelização.`;
             } else if (weakestPillar === 'CRM e Processos') {
-                p2 = `Seu maior gargalo está em CRM e Processos (${pillarScores[weakestPillar]}%). A operação é caótica: dependência excessiva de você ou de uma secretária que "se sair, a clínica fecha". Base de pacientes antigos esfriando sem acionamento ativo. Absenteísmo não gerenciado = horários vazios = prejuízo invisível. Sem automação, é impossível escalar.`;
+                p2 = `Sua principal oportunidade de crescimento está em CRM e Processos (${weakestPillarScore}%). A operação do consultório parece depender muito da sua presença, com processos pouco documentados. Isso gera um "prejuízo invisível" com horários ociosos e uma base de pacientes que não é reativada. A implementação de um CRM e a automação de processos são o caminho para escalar o faturamento sem aumentar sua carga de trabalho.`;
             } else {
-                p2 = `Seu maior gargalo está em Reputação e Autoridade (${pillarScores[weakestPillar]}%). Você é excelente médica no consultório, mas invisível no mercado. Pacientes não encontram você ao pesquisar no Google. Você gasta energia excessiva justificando o preço porque não tem presença digital que ancore valor. Sem autoridade, negociar preço é uma batalha diária.`;
+                p2 = `Sua principal oportunidade de crescimento está em Reputação e Autoridade (${weakestPillarScore}%). Apesar da sua excelência técnica, sua presença digital pode não refletir seu verdadeiro valor, tornando-o(a) "invisível" para novos pacientes no Google. Construir uma autoridade online forte permite que você pare de justificar seu preço e passe a ser a escolha natural para pacientes de alto valor.`;
             }
 
             // Parágrafo 3: Solução H2H
-            const p3 = `Uma reestruturação profunda baseada nos 4 pilares — atração premium, processos CRM sólidos, experiência humanizada sofisticada e autoridade digital — é o único caminho. Essa integração transforma você de "médica que trabalha muito" em "marca médica valiosa". O resultado: margem de lucro maior, carga de trabalho menor, negócio independente de você.`;
+            const p3 = `O caminho para o próximo nível é integrar os 4 pilares: uma estratégia de marketing que atrai os pacientes certos, uma experiência H2H que encanta, processos que garantem a eficiência e uma reputação que constrói sua marca. Essa sinergia transforma seu consultório em um negócio sólido e valioso, que prospera com ou sem a sua presença constante, garantindo maior lucratividade e qualidade de vida.`;
 
             return {
                 title,
@@ -1211,12 +1248,6 @@
             return steps;
         }
 
-    </script>
-
-    <script src="questions.js"></script>
-    <script>
-        // Reinicializar formSteps após carregar questions.js
-        let formSteps = buildFormSteps();
     </script>
 </body>
 </html>
