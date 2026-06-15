@@ -862,7 +862,7 @@
                 const form = document.createElement('form');
                 form.action = 'https://formsubmit.co/contato@femo.com.br';
                 form.method = 'POST';
-                form.style.display = 'none';
+                form.enctype = 'application/x-www-form-urlencoded';
 
                 const fields = {
                     'name': formData.userDetails['full-name'],
@@ -877,6 +877,8 @@
                     '_captcha': 'false'
                 };
 
+                console.log('Enviando formulário com dados:', fields);
+
                 for (let key in fields) {
                     const input = document.createElement('input');
                     input.type = 'hidden';
@@ -886,6 +888,7 @@
                 }
 
                 document.body.appendChild(form);
+                console.log('Formulário criado. Enviando...');
                 form.submit();
             };
 
