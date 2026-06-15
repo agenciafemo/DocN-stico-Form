@@ -183,6 +183,15 @@
             animation: spin 0.8s linear infinite;
         }
 
+        .checkmark {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
         /* Underline Animado */
         h1, h2 {
             position: relative;
@@ -652,30 +661,48 @@
                         loader1.classList.remove('opacity-0', 'translate-y-4');
                     }, 500);
                     setTimeout(() => {
+                        const spinner1 = document.getElementById('spinner-1');
+                        const check1 = document.getElementById('check-1');
+                        if (spinner1) spinner1.style.display = 'none';
+                        if (check1) check1.classList.remove('opacity-0');
+                    }, 1200);
+                    setTimeout(() => {
                         const loader2 = document.getElementById('loader-2');
                         loader2.classList.remove('opacity-0', 'translate-y-4');
                     }, 1500);
                     setTimeout(() => {
+                        const spinner2 = document.getElementById('spinner-2');
+                        const check2 = document.getElementById('check-2');
+                        if (spinner2) spinner2.style.display = 'none';
+                        if (check2) check2.classList.remove('opacity-0');
+                    }, 2200);
+                    setTimeout(() => {
                         const loader3 = document.getElementById('loader-3');
                         loader3.classList.remove('opacity-0', 'translate-y-4');
-                        setTimeout(() => {
-                            navButtons.innerHTML = `<button id="view-diagnosis-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
-                            navButtons.classList.add('animate-fade-in');
-                            const diagBtn = document.getElementById('view-diagnosis-btn');
-                            diagBtn.addEventListener('click', (e) => {
-                                const rect = diagBtn.getBoundingClientRect();
-                                const x = e.clientX - rect.left;
-                                const y = e.clientY - rect.top;
-                                const ripple = document.createElement('span');
-                                ripple.className = 'ripple';
-                                ripple.style.width = ripple.style.height = '30px';
-                                ripple.style.left = x + 'px';
-                                ripple.style.top = y + 'px';
-                                diagBtn.appendChild(ripple);
-                                setTimeout(() => { currentStep++; renderStep(); }, 300);
-                            });
-                        }, 300);
                     }, 2500);
+                    setTimeout(() => {
+                        const spinner3 = document.getElementById('spinner-3');
+                        const check3 = document.getElementById('check-3');
+                        if (spinner3) spinner3.style.display = 'none';
+                        if (check3) check3.classList.remove('opacity-0');
+                        const readyMsg = document.getElementById('ready-message');
+                        if (readyMsg) readyMsg.classList.remove('opacity-0');
+                        navButtons.innerHTML = `<button id="view-diagnosis-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Ver meu diagnóstico &rarr;</button>`;
+                        navButtons.classList.add('animate-fade-in');
+                        const diagBtn = document.getElementById('view-diagnosis-btn');
+                        diagBtn.addEventListener('click', (e) => {
+                            const rect = diagBtn.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            const ripple = document.createElement('span');
+                            ripple.className = 'ripple';
+                            ripple.style.width = ripple.style.height = '30px';
+                            ripple.style.left = x + 'px';
+                            ripple.style.top = y + 'px';
+                            diagBtn.appendChild(ripple);
+                            setTimeout(() => { currentStep++; renderStep(); }, 300);
+                        });
+                    }, 3200);
                 }
 
                 if (stepData.type === 'capture') {
@@ -1059,24 +1086,30 @@ https://seu-calendario.com/agendamento
                         <div class="space-y-5 text-left max-w-md mx-auto">
                             <div id="loader-1" class="opacity-0 transition-all duration-500 transform translate-y-4">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <span class="spinner"></span>
+                                    <span class="spinner" id="spinner-1"></span>
+                                    <span class="checkmark opacity-0 transition-opacity duration-300" id="check-1">✓</span>
                                     <p class="font-medium">Calculando scores dos 4 pilares...</p>
                                 </div>
                                 <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
                             </div>
                             <div id="loader-2" class="opacity-0 transition-all duration-500 transform translate-y-4">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <span class="spinner"></span>
+                                    <span class="spinner" id="spinner-2"></span>
+                                    <span class="checkmark opacity-0 transition-opacity duration-300" id="check-2">✓</span>
                                     <p class="font-medium">Identificando gargalos principais...</p>
                                 </div>
                                 <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
                             </div>
                             <div id="loader-3" class="opacity-0 transition-all duration-500 transform translate-y-4">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <span class="spinner"></span>
+                                    <span class="spinner" id="spinner-3"></span>
+                                    <span class="checkmark opacity-0 transition-opacity duration-300" id="check-3">✓</span>
                                     <p class="font-medium">Preparando seu diagnóstico...</p>
                                 </div>
                                 <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                            </div>
+                            <div id="ready-message" class="opacity-0 transition-opacity duration-500 mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="text-sm text-green-700 font-medium">✓ Seu diagnóstico está pronto! Clique no botão abaixo.</p>
                             </div>
                         </div>
                     </div>
