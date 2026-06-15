@@ -865,7 +865,7 @@
                 const diagText = `DIAGNÓSTICO: ${diagnosis.title}\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
 
                 try {
-                    const response = await fetch('https://formspree.io/f/xyzgdqwl', {
+                    const response = await fetch('/api/send-diagnosis', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -875,9 +875,7 @@
                             city: formData.userDetails['city-state'],
                             whatsapp: formData.userDetails['whatsapp'],
                             score: formData.generalScore,
-                            diagnosis: diagText,
-                            _subject: `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
-                            _cc: 'contato@femo.com.br'
+                            diagnosis: diagText
                         })
                     });
 
