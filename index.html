@@ -706,12 +706,12 @@
                 }
                 if (stepData.type === 'dashboard') {
                     navButtons.innerHTML = `
-                        <div class="flex flex-col gap-3 mt-8">
-                            <button id="share-whatsapp-btn" class="relative overflow-hidden w-full bg-green-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-green-500/30 hover:bg-green-600 hover:-translate-y-[2px] transition-all duration-300 flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.006c-1.442 0-2.82.56-3.846 1.585-1.026 1.026-1.589 2.391-1.589 3.846 0 3.006 2.446 5.452 5.449 5.452 1.422 0 2.768-.55 3.783-1.569 1.014-1.02 1.622-2.474 1.622-3.883 0-3.012-2.438-5.461-5.449-5.461zm0-2.271C13.3 2 16.608 5.33 16.608 9.694c0 2.237-.855 4.34-2.414 5.869-1.509 1.487-3.545 2.402-5.747 2.402-4.537 0-8.335-3.798-8.335-8.335 0-2.206.882-4.271 2.455-5.833C5.046 2.804 7.2 2.008 9.587 2.008z"/></svg>
-                                Compartilhar pelo WhatsApp
+                        <div class="flex flex-col sm:flex-row gap-3 mt-8 w-full">
+                            <button id="share-whatsapp-btn" class="relative overflow-hidden flex-1 bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-green-500/30 hover:bg-green-600 hover:-translate-y-[2px] transition-all duration-300 flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181 0 6.167 1.239 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.979-.001-3.95-.5-5.738-1.438l-6.255 1.644zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 4.333 1.926 6.107l-2.519 6.194 6.362-1.665z"/></svg>
+                                Compartilhar
                             </button>
-                            <button id="continue-dashboard-btn" class="shimmer-btn relative overflow-hidden w-full bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Prosseguir &rarr;</button>
+                            <button id="continue-dashboard-btn" class="shimmer-btn relative overflow-hidden flex-1 bg-brand-gold text-brand-text-dark font-bold py-3 px-6 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Prosseguir &rarr;</button>
                         </div>
                     `;
                     setTimeout(() => {
@@ -721,7 +721,7 @@
                             whatsappBtn.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
-                                const diagText = `*DIAGNÓSTICO DE MATURIDADE COMERCIAL*\n\n*${diagnosis.title}*\n\n*Score: ${formData.generalScore}/100*\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}\n\n---\n\n📊 *Gere seu próprio diagnóstico:*\nhttps://docnosticoform.vercel.app\n\n#DocNóstico #ConsultórioH2H #AlturaPerformance`;
+                                const diagText = `*DocNóstico - Diagnóstico de Maturidade Comercial*\n\nhttps://docnosticoform.vercel.app\n\n*${diagnosis.title}*\n\n*Score: ${formData.generalScore}/100*\n\n${diagnosis.paragraph1}\n\n${diagnosis.paragraph2}\n\n${diagnosis.paragraph3}`;
                                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(diagText)}`;
                                 window.open(whatsappUrl, '_blank');
                             });
