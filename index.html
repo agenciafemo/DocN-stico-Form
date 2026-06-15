@@ -786,19 +786,26 @@
                 }, 400);
             };
 
-            const handleFinalSubmit = () => {
+            const handleFinalSubmit = async () => {
                 if (validateAndSaveCaptureForm()) {
                     const submitBtn = document.getElementById('final-submit-btn');
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner mr-2"></span> Enviando e redirecionando...';
+                    submitBtn.innerHTML = '<span class="spinner mr-2"></span> Enviando diagnóstico...';
                     submitBtn.style.opacity = '0.7';
                     submitBtn.style.pointerEvents = 'none';
 
-                    // A função submitData agora cuida do envio e redirecionamento
-                    // Não precisamos mais de lógica de sucesso/erro aqui
-                    setTimeout(() => {
-                        submitData();
-                    }, 500); // Pequeno delay para o usuário ver o status
+                    const success = await submitData();
+
+                    if (success) {
+                        const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
+                        window.location.href = `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`;
+                    } else {
+                        showValidationError('Ocorreu um erro ao enviar. Por favor, tente novamente em alguns instantes.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Ver meu diagnóstico &rarr;';
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.pointerEvents = 'auto';
+                    }
                 }
             };
             const validateEmail = (email) => {
@@ -848,8 +855,7 @@
                     .replace(/(\d{5})(\d)/, '$1-$2');
             };
 
-            const submitData = () => {
-                const form = document.getElementById('quiz-form');
+            const submitData = async () => {
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
 
                 const diagHtml = `
@@ -884,24 +890,42 @@
                     </div>
                 `;
 
-                const firstName = formData.userDetails['full-name'] ? formData.userDetails['full-name'].split(' ')[0] : '';
-                const hiddenFields = {
-                    '_next': `${window.location.origin}/obrigado.html?name=${encodeURIComponent(firstName)}`,
+                const dataToSend = {
+                    '_captcha': false, // Desativa o reCAPTCHA para facilitar os testes
                     '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} (${formData.generalScore}/100)`,
                     '_cc': formData.userDetails['email'],
                     '_autoresponse': `Olá ${formData.userDetails['full-name']}, recebemos seu diagnóstico! Uma cópia completa foi enviada para o seu e-mail. Em breve, nossa equipe de especialistas entrará em contato.`,
                     'message': diagHtml,
+                    // Adicionando os dados do usuário de forma explícita para o corpo do e-mail do admin
+                    'Nome': formData.userDetails['full-name'],
+                    'Especialidade': formData.userDetails['specialty'],
+                    'Cidade/Estado': formData.userDetails['city-state'],
+                    'Email (para contato)': formData.userDetails['email'],
+                    'WhatsApp': formData.userDetails['whatsapp'],
                 };
 
-                for (const key in hiddenFields) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = hiddenFields[key];
-                    form.appendChild(input);
-                }
+                try {
+                    const response = await fetch("https://formsubmit.co/ajax/contato@femo.com.br", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(dataToSend)
+                    });
 
-                form.submit();
+                    if (response.ok) {
+                        console.log('Diagnóstico enviado com sucesso via FormSubmit.');
+                        return true;
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Erro ao enviar para o FormSubmit:', errorData);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Erro de rede ao tentar enviar o formulário:', error);
+                    return false;
+                }
             };
 
             const addRippleEffect = (btn) => {
