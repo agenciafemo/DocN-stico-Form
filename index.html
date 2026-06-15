@@ -532,137 +532,9 @@
                 userDetails: {},
                 answers: [],
                 totalScore: 0,
+                pillarScores: {},
+                generalScore: 0
             };
-
-            const formSteps = [
-                {
-                    type: 'intro',
-                    content: `
-                        <div class="text-center max-w-2xl mx-auto">
-                            <h1 class="text-4xl sm:text-5xl font-bold mb-2 leading-tight">
-                                Este não é um<br><span class="text-brand-gold">questionário comum</span>
-                            </h1>
-                            <p class="text-xl text-gray-700 font-medium mb-10">É um diagnóstico de posicionamento.</p>
-                            <p class="text-base text-gray-600 mb-12">Cada resposta revelará o nível de maturidade atual do seu consultório — do autoconhecimento até a autoridade real no mercado.</p>
-
-                            <div class="mb-12">
-                                <p class="font-bold text-brand-text-dark mb-6">Sua jornada em 4 etapas:</p>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
-                                        <div class="text-2xl font-bold text-brand-gold mb-2">01</div>
-                                        <p class="font-semibold text-brand-text-dark">Autoconhecimento</p>
-                                        <p class="text-xs text-gray-600 mt-1">Fundação</p>
-                                    </div>
-                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
-                                        <div class="text-2xl font-bold text-brand-gold mb-2">02</div>
-                                        <p class="font-semibold text-brand-text-dark">Comunicação</p>
-                                        <p class="text-xs text-gray-600 mt-1">Ponte</p>
-                                    </div>
-                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
-                                        <div class="text-2xl font-bold text-brand-gold mb-2">03</div>
-                                        <p class="font-semibold text-brand-text-dark">Percepção</p>
-                                        <p class="text-xs text-gray-600 mt-1">Reflexo</p>
-                                    </div>
-                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
-                                        <div class="text-2xl font-bold text-brand-gold mb-2">04</div>
-                                        <p class="font-semibold text-brand-text-dark">Maturidade</p>
-                                        <p class="text-xs text-gray-600 mt-1">Resultados</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    `
-                },
-                { type: 'question', pillar: 'Clareza de Marca Pessoal', question: 'Hoje, você conseguiria explicar claramente quem você é como médica, sem falar apenas da sua especialidade?', options: [ { text: 'Não faço ideia', score: 1 }, { text: 'Tenho dificuldade', score: 2 }, { text: 'Consigo parcialmente', score: 3 }, { text: 'Tenho muita clareza', score: 4 } ] },
-                { type: 'question', pillar: 'Qualidade do Conteúdo', question: 'Seu conteúdo hoje transmite:', options: [ { text: 'Só informação técnica', score: 1 }, { text: 'Um pouco de quem eu sou', score: 2 }, { text: 'Mistura entre técnico e pessoal', score: 3 }, { text: 'Uma identidade clara e reconhecível', score: 4 } ] },
-                { type: 'question', pillar: 'Definição de Público-Alvo', question: 'Você sabe exatamente qual paciente quer atrair?', options: [ { text: 'Não', score: 1 }, { text: 'Tenho uma ideia', score: 2 }, { text: 'Sim, mas não aplico', score: 3 }, { text: 'Sim, totalmente claro', score: 4 } ] },
-                { type: 'question', pillar: 'Presença Digital', question: 'Sua presença hoje nas redes é:', options: [ { text: 'Inexistente', score: 1 }, { text: 'Inconstante', score: 2 }, { text: 'Regular', score: 3 }, { text: 'Consistente e estratégica', score: 4 } ] },
-                { type: 'question', pillar: 'Foco da Comunicação', question: 'Hoje, sua comunicação tem mais foco em:', options: [ { text: 'Atrair pacientes', score: 1 }, { text: 'Mostrar conhecimento', score: 2 }, { text: 'Educar e gerar valor', score: 3 }, { text: 'Construir uma percepção clara de quem você é', score: 4 } ] },
-                { type: 'question', pillar: 'Impacto da Comunicação', question: 'Você sente que sua comunicação:', options: [ { text: 'Não gera impacto', score: 1 }, { text: 'Gera algum interesse', score: 2 }, { text: 'Gera conexão', score: 3 }, { text: 'Gera identificação forte', score: 4 } ] },
-                { type: 'question', pillar: 'Percepção/Posicionamento', question: 'Como o paciente te enxerga?', options: [ { text: 'Mais uma opção', score: 1 }, { text: 'Boa profissional', score: 2 }, { text: 'Referência em alguns casos', score: 3 }, { text: 'Autoridade clara', score: 4 } ] },
-                { type: 'question', pillar: 'Poder de Persuasão', question: 'Hoje você sente que:', options: [ { text: 'Preciso convencer', score: 1 }, { text: 'Preciso me provar', score: 2 }, { text: 'Consigo conduzir parcialmente', score: 3 }, { text: 'O paciente já chega inclinado', score: 4 } ] },
-                { type: 'question', pillar: 'Maturidade Financeira', question: 'Como você se sente em relação aos seus valores de consulta comparado aos dos concorrentes?', options: [ { text: 'Cobro menos/Competitivo', score: 1 }, { text: 'Média de mercado', score: 2 }, { text: 'Cobro um pouco mais/Inseguro', score: 3 }, { text: 'Meus valores refletem meu posicionamento', score: 4 } ] },
-                { type: 'question', pillar: 'Conversão', question: 'O que acontece quando um paciente descobre seu preço antes da consulta?', options: [ { text: 'Desaparece', score: 1 }, { text: 'Tenta negociar', score: 2 }, { text: 'Fica em dúvida', score: 3 }, { text: 'Entende o valor e agenda', score: 4 } ] },
-                { type: 'question', pillar: 'Processo de Venda', question: 'Como você descreveria seu processo de venda da consulta/procedimento?', options: [ { text: 'Não tenho', score: 1 }, { text: 'Tento convencer', score: 2 }, { text: 'Tento educar', score: 3 }, { text: 'Tenho um método que conduz o paciente', score: 4 } ] },
-                { type: 'question', pillar: 'Estrutura de Crescimento', question: 'Seu crescimento hoje depende mais de:', options: [ { text: 'Indicação', score: 1 }, { text: 'Sorte', score: 2 }, { text: 'Esforço', score: 3 }, { text: 'Estrutura', score: 4 } ] },
-                { type: 'question', pillar: 'Composição da Agenda', question: 'Sua agenda hoje é composta majoritariamente por:', options: [ { text: 'Convênio', score: 1 }, { text: 'Indicação', score: 2 }, { text: 'Mistura instável', score: 3 }, { text: 'Marca pessoal e autoridade', score: 4 } ] },
-                { type: 'question', pillar: 'Autoridade Real', question: 'Se você parar de postar nas redes por 30 dias, o que acontece com seu faturamento?', options: [ { text: 'Cai drasticamente', score: 1 }, { text: 'Cai um pouco', score: 2 }, { text: 'Não muda nada', score: 3 }, { text: 'Base sólida/Autoridade sustenta', score: 4 } ] },
-                {
-                    type: 'processing',
-                    content: `
-                        <div class="text-center">
-                            <h1 class="text-3xl sm:text-4xl font-bold mb-8">Analisando seu consultório...</h1>
-                            <div class="space-y-5 text-left max-w-md mx-auto">
-                                <div id="loader-1" class="opacity-0 transition-all duration-500 transform translate-y-4">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="spinner"></span>
-                                        <p class="font-medium">Calculando scores dos 6 pilares...</p>
-                                    </div>
-                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
-                                </div>
-                                <div id="loader-2" class="opacity-0 transition-all duration-500 transform translate-y-4">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="spinner"></span>
-                                        <p class="font-medium">Identificando padrões e dores principais...</p>
-                                    </div>
-                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
-                                </div>
-                                <div id="loader-3" class="opacity-0 transition-all duration-500 transform translate-y-4">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="spinner"></span>
-                                        <p class="font-medium">Preparando seu diagnóstico personalizado...</p>
-                                    </div>
-                                    <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    `
-                },
-                {
-                    type: 'capture',
-                    title: 'Dados para Contato',
-                    content: `
-                        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2">Seu diagnóstico está pronto.</h1>
-                        <p class="text-center text-gray-600 font-light mb-8">Para visualizar, preencha seus dados:</p>
-                        <div class="space-y-6">
-                            <div>
-                                <label for="full-name" class="block text-sm font-medium text-brand-text-dark">Nome completo</label>
-                                <input type="text" name="full-name" id="full-name" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                            </div>
-                            <div>
-                                <label for="specialty" class="block text-sm font-medium text-brand-text-dark">Especialidade médica</label>
-                                <input type="text" name="specialty" id="specialty" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                            </div>
-                            <div>
-                                <label for="city-state" class="block text-sm font-medium text-brand-text-dark">Cidade / Estado</label>
-                                <input type="text" name="city-state" id="city-state" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-brand-text-dark">E-mail</label>
-                                <input type="email" name="email" id="email" data-validate="true" placeholder="seu@email.com.br" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                            </div>
-                            <div>
-                                <label for="whatsapp" class="block text-sm font-medium text-brand-text-dark">WhatsApp</label>
-                                <input type="text" name="whatsapp" id="whatsapp" data-validate="true" placeholder="(00) 00000-0000" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
-                            </div>
-                        </div>
-                        <div class="mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
-                            <span>Seus dados estão protegidos. Zero spam.</span>
-                        </div>
-                    `
-                },
-                {
-                    type: 'final',
-                    content: `
-                        <div class="text-center">
-                            <h1 class="text-3xl sm:text-4xl font-bold text-green-600 mb-4">Obrigado!</h1>
-                            <p class="text-gray-600 font-light max-w-lg mx-auto">Obrigado por compartilhar suas informações. Nossa equipe de especialistas entrará em contato em breve pelo WhatsApp com sua análise completa e direcionamentos estratégicos.</p>
-                        </div>
-                    `
-                }
-            ];
 
             let currentStep = 0; // Start at the first question
 
@@ -692,6 +564,16 @@
                         `<button class="option-button w-full text-left p-4 mb-3 bg-white/80 border border-gray-300 rounded-lg" data-score="${opt.score}" data-text="${opt.text}">${opt.text}</button>`
                     ).join('');
                     contentHtml = `<h1 class="text-2xl sm:text-3xl font-bold text-center mb-8">${stepData.question}</h1><div>${optionsHtml}</div>`;
+                } else if (stepData.type === 'dashboard') {
+                    const pillarScores = calculatePillarScores(formData.answers);
+                    const generalScore = calculateGeneralScore(pillarScores);
+
+                    formData.pillarScores = pillarScores;
+                    formData.generalScore = generalScore;
+
+                    stepTitle = 'Seu Diagnóstico';
+                    progressPercentage = 100;
+                    contentHtml = stepData.content(pillarScores, generalScore);
                 } else if (stepData.type === 'capture') {
                     stepTitle = 'Seu diagnóstico está pronto';
                     progressPercentage = 100;
@@ -729,7 +611,7 @@
                             <button id="start-intro-btn" class="shimmer-btn relative overflow-hidden w-full bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Começar diagnóstico &rarr;</button>
                             <div class="flex items-center justify-center gap-2 text-gray-500 text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.5H7a1 1 0 100 2h4a1 1 0 001-1v-4.5z" clip-rule="evenodd" /></svg>
-                                <span>Tempo estimado: ~8 minutos</span>
+                                <span>Tempo estimado: ~15 minutos</span>
                             </div>
                         </div>
                     `;
@@ -744,6 +626,22 @@
                         ripple.style.left = x + 'px';
                         ripple.style.top = y + 'px';
                         startBtn.appendChild(ripple);
+                        setTimeout(() => { currentStep++; renderStep(); }, 300);
+                    });
+                }
+                if (stepData.type === 'dashboard') {
+                    navButtons.innerHTML = `<button id="continue-dashboard-btn" class="shimmer-btn relative overflow-hidden w-full mt-8 bg-brand-gold text-brand-text-dark font-bold py-3 px-8 rounded-lg shadow-lg shadow-brand-gold/30 hover:bg-opacity-90 hover:-translate-y-[2px] transition-all duration-300">Prosseguir &rarr;</button>`;
+                    const dashBtn = document.getElementById('continue-dashboard-btn');
+                    dashBtn.addEventListener('click', (e) => {
+                        const rect = dashBtn.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const ripple = document.createElement('span');
+                        ripple.className = 'ripple';
+                        ripple.style.width = ripple.style.height = '30px';
+                        ripple.style.left = x + 'px';
+                        ripple.style.top = y + 'px';
+                        dashBtn.appendChild(ripple);
                         setTimeout(() => { currentStep++; renderStep(); }, 300);
                     });
                 }
@@ -900,13 +798,10 @@
             };
 
             const submitData = async () => {
-                formData.totalScore = formData.answers.reduce((total, ans) => total + (ans ? ans.score : 0), 0);
-                if (formData.totalScore < 28) {
-                    formData.tag = '[Urgente - Reposicionamento Necessário]';
-                }
+                const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
 
                 const emailContent = `
-DIAGNÓSTICO DE POSICIONAMENTO PARA MÉDICOS - DocNóstico
+DIAGNÓSTICO DE ALTA PERFORMANCE MÉDICA - DocNóstico
 
 DADOS DA MÉDICA:
 - Nome: ${formData.userDetails['full-name']}
@@ -915,18 +810,31 @@ DADOS DA MÉDICA:
 - E-mail: ${formData.userDetails['email']}
 - WhatsApp: ${formData.userDetails['whatsapp']}
 
-SCORE TOTAL: ${formData.totalScore} / 56 pontos
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCORE GERAL: ${formData.generalScore}/100 - ${diagnosis.title}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-RESULTADO POR PILAR:
-${formData.answers.map(ans => `- ${ans.pillar}: ${ans.score}/4 - ${ans.answer}`).join('\n')}
+📊 BREAKDOWN POR PILAR:
+${Object.entries(formData.pillarScores).map(([p, s]) => `- ${p}: ${s}%`).join('\n')}
 
-CLASSIFICAÇÃO: ${formData.tag || 'Candidata a Reposicionamento'}
+⚠️ GARGALO PRINCIPAL: ${diagnosis.weakestPillar} (${formData.pillarScores[diagnosis.weakestPillar]}%)
 
-Jornada Percorrida:
-1️⃣ Autoconhecimento (Perguntas 1-3)
-2️⃣ Comunicação e Presença (Perguntas 4-6)
-3️⃣ Percepção de Mercado (Perguntas 7-11)
-4️⃣ Maturidade de Negócios (Perguntas 12-14)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANÁLISE PERSONALIZADA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${diagnosis.paragraph1}
+
+${diagnosis.paragraph2}
+
+${diagnosis.paragraph3}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔓 PRÓXIMO PASSO:
+Agende uma reunião de 25 minutos para analisar seu plano de ação específico para o pilar de ${diagnosis.weakestPillar}.
+
+https://seu-calendario.com/agendamento
 `;
 
                 try {
@@ -939,10 +847,12 @@ Jornada Percorrida:
                             'specialty': formData.userDetails['specialty'],
                             'city': formData.userDetails['city-state'],
                             'whatsapp': formData.userDetails['whatsapp'],
-                            'total_score': formData.totalScore,
-                            'tag': formData.tag || 'Cliente Potencial',
+                            'general_score': formData.generalScore,
+                            'diagnosis_title': diagnosis.title,
+                            'pillar_scores': JSON.stringify(formData.pillarScores),
+                            'weakest_pillar': diagnosis.weakestPillar,
                             'message': emailContent,
-                            '_subject': `Novo Diagnóstico: ${formData.userDetails['full-name']} - Score ${formData.totalScore}/32`
+                            '_subject': `Diagnóstico Recebido: ${formData.userDetails['full-name']} - Score ${formData.generalScore}/100`
                         })
                     });
                 } catch (error) {
@@ -994,6 +904,303 @@ Jornada Percorrida:
                 }, 300);
             });
         });
+        // =================================================================
+        // FUNÇÕES DE CÁLCULO DE PERFORMANCE
+        // =================================================================
+
+        function calculatePillarScores(answers) {
+            const pillarScores = {
+                'Marketing e Vendas': [],
+                'Experiência H2H': [],
+                'CRM e Processos': [],
+                'Reputação e Autoridade': []
+            };
+
+            answers.forEach(ans => {
+                if (pillarScores[ans.pillar]) {
+                    pillarScores[ans.pillar].push(ans.score);
+                }
+            });
+
+            const averages = {};
+            for (let pillar in pillarScores) {
+                const scores = pillarScores[pillar];
+                const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b) / scores.length) : 0;
+                averages[pillar] = Math.round(avg);
+            }
+
+            return averages;
+        }
+
+        function calculateGeneralScore(pillarScores) {
+            const scores = Object.values(pillarScores);
+            return scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b) / scores.length) : 0;
+        }
+
+        function getOperationStatus(score) {
+            if (score <= 50) return { status: 'OPERAÇÃO CRÍTICA', color: 'red', colorCode: '#dc2626' };
+            if (score <= 75) return { status: 'OPERAÇÃO EM AJUSTE', color: 'amber', colorCode: '#d97706' };
+            return { status: 'OPERAÇÃO PREMIUM', color: 'green', colorCode: '#10b981' };
+        }
+
+        function generateDiagnosis(generalScore, pillarScores, userDetails, answers) {
+            // Título dinâmico
+            let title = '';
+            if (generalScore <= 50) title = 'A Síndrome da Gaiola de Ouro Médica';
+            else if (generalScore <= 75) title = 'O Paradoxo do Consultório Invisível';
+            else title = 'O Próximo Nível: Da Autoridade ao Equity Médico';
+
+            // Parágrafo 1: Análise de Faturamento (P1 - primeiro pilar)
+            const firstAnswer = answers.find(a => a.question.includes('real raiz'));
+            let p1 = '';
+            if (firstAnswer) {
+                if (firstAnswer.score <= 25) {
+                    p1 = 'Sua estrutura está refém de convênios ou colegas. Falta tração de mercado própria e sua renda é completamente dependente destes canais.';
+                } else if (firstAnswer.score <= 50) {
+                    p1 = 'O "boca a boca" sustenta a agenda, mas é instável demais. Um mês lotado, outro vazio — isso gasta mentalmente.';
+                } else if (firstAnswer.score <= 75) {
+                    p1 = 'Você investe em tráfego pago e atrai volume, mas a qualidade é ruim: muitos curiosos, muita pechincha de preço.';
+                } else {
+                    p1 = 'Excelente gestão de captação. Pacientes chegam qualificados e prontos, sua agenda é previsível e premium.';
+                }
+            }
+
+            // Parágrafo 2: Gargalo Principal
+            const weakestPillar = Object.keys(pillarScores).reduce((a, b) =>
+                pillarScores[a] < pillarScores[b] ? a : b
+            );
+            let p2 = '';
+            if (weakestPillar === 'Marketing e Vendas') {
+                p2 = 'Seu maior gargalo está na atração e conversão de pacientes. Você é refém de indicações passivas, não tem canais próprios de capta, e atraí muitos curiosos que negociam preço.';
+            } else if (weakestPillar === 'Experiência H2H') {
+                p2 = 'A relação com o paciente é fria ou puramente transacional. Faltam encanto, materiais profissionais e acompanhamento que transforme consulta em experiência memorável.';
+            } else if (weakestPillar === 'CRM e Processos') {
+                p2 = 'Caos operacional é o seu risco maior: dependência excessiva de você mesma, falta de automação, base de pacientes esfriacendo, prejuízo com absenteísmo e decisões que só você toma.';
+            } else {
+                p2 = 'Você é excelente médica mas invisível digitalmente. Pacientes não encontram você online, gasta energia verbal justificando preço, e não constrói autoridade real no mercado.';
+            }
+
+            // Parágrafo 3: Solução
+            const p3 = 'Uma reestruturação equilibrada dos 4 pilares — atração premium, processos CRM sólidos, experiência humanizada sofisticada e autoridade digital — é o único caminho para aumentar margem de lucro e recuperar liberdade de tempo.';
+
+            return {
+                title,
+                paragraph1: p1,
+                paragraph2: p2,
+                paragraph3: p3,
+                weakestPillar,
+                pillarScores
+            };
+        }
+
+        // =================================================================
+        // FUNÇÃO PARA CONSTRUIR FORM STEPS DINAMICAMENTE
+        // =================================================================
+
+        function buildFormSteps() {
+            const steps = [
+                {
+                    type: 'intro',
+                    content: `
+                        <div class="text-center max-w-2xl mx-auto">
+                            <h1 class="text-4xl sm:text-5xl font-bold mb-2 leading-tight">
+                                Este não é um<br><span class="text-brand-gold">questionário comum</span>
+                            </h1>
+                            <p class="text-xl text-gray-700 font-medium mb-10">É um diagnóstico de posicionamento.</p>
+                            <p class="text-base text-gray-600 mb-12">Cada resposta revelará o nível de maturidade atual do seu consultório — do autoconhecimento até a autoridade real no mercado.</p>
+
+                            <div class="mb-12">
+                                <p class="font-bold text-brand-text-dark mb-6">Sua jornada em 4 pilares:</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">📢</div>
+                                        <p class="font-semibold text-brand-text-dark">Marketing</p>
+                                        <p class="text-xs text-gray-600 mt-1">Atração</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">🤝</div>
+                                        <p class="font-semibold text-brand-text-dark">Experiência</p>
+                                        <p class="text-xs text-gray-600 mt-1">Humanizado</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">⚙️</div>
+                                        <p class="font-semibold text-brand-text-dark">CRM</p>
+                                        <p class="text-xs text-gray-600 mt-1">Processos</p>
+                                    </div>
+                                    <div class="card-enter bg-gradient-to-br from-brand-gold/10 to-brand-brown/5 p-5 rounded-lg border border-brand-gold/20 hover:border-brand-gold/50 transition-all">
+                                        <div class="text-2xl font-bold text-brand-gold mb-2">👑</div>
+                                        <p class="font-semibold text-brand-text-dark">Reputação</p>
+                                        <p class="text-xs text-gray-600 mt-1">Autoridade</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    `
+                }
+            ];
+
+            // Adicionar as 20 perguntas do QUIZ_QUESTIONS
+            if (typeof QUIZ_QUESTIONS !== 'undefined') {
+                QUIZ_QUESTIONS.forEach(q => {
+                    steps.push({
+                        type: 'question',
+                        pillar: q.pilar,
+                        question: q.question,
+                        options: q.options.map(opt => ({ text: opt.text, score: opt.score }))
+                    });
+                });
+            }
+
+            // Adicionar telas de processamento e captura
+            steps.push({
+                type: 'processing',
+                content: `
+                    <div class="text-center">
+                        <h1 class="text-3xl sm:text-4xl font-bold mb-8">Analisando seu consultório...</h1>
+                        <div class="space-y-5 text-left max-w-md mx-auto">
+                            <div id="loader-1" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="spinner"></span>
+                                    <p class="font-medium">Calculando scores dos 4 pilares...</p>
+                                </div>
+                                <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                            </div>
+                            <div id="loader-2" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="spinner"></span>
+                                    <p class="font-medium">Identificando gargalos principais...</p>
+                                </div>
+                                <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                            </div>
+                            <div id="loader-3" class="opacity-0 transition-all duration-500 transform translate-y-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="spinner"></span>
+                                    <p class="font-medium">Preparando seu diagnóstico...</p>
+                                </div>
+                                <div class="w-full bg-black/10 rounded-full h-2"><div class="progress-fill bg-brand-gold h-2 rounded-full" style="width: 100%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            });
+
+            // Dashboard de Resultados
+            steps.push({
+                type: 'dashboard',
+                content: function(pillarScores, generalScore) {
+                    const status = getOperationStatus(generalScore);
+                    const weakestPillar = Object.keys(pillarScores).reduce((a, b) =>
+                        pillarScores[a] < pillarScores[b] ? a : b
+                    );
+
+                    return `
+                        <div class="text-center max-w-3xl mx-auto">
+                            <h2 class="text-3xl font-bold mb-8">Seu Diagnóstico de Alta Performance</h2>
+
+                            <!-- Score Central -->
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mb-12">
+                                <div class="relative w-40 h-40 flex items-center justify-center">
+                                    <svg class="w-full h-full" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e0d0" stroke-width="8"></circle>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="${status.colorCode}" stroke-width="8"
+                                            stroke-dasharray="${generalScore * 3.14}" stroke-dashoffset="0" stroke-linecap="round"
+                                            style="transform: rotate(-90deg); transform-origin: 60px 60px; transition: stroke-dasharray 1.5s ease;"></circle>
+                                    </svg>
+                                    <div class="absolute text-center">
+                                        <div class="text-4xl font-bold text-brand-text-dark">${generalScore}</div>
+                                        <div class="text-xs text-gray-500">/100</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-2">Status Atual</p>
+                                    <p class="text-2xl font-bold" style="color: ${status.colorCode};">${status.status}</p>
+                                </div>
+                            </div>
+
+                            <!-- Breakdown por Pilar -->
+                            <div class="space-y-4 mb-8">
+                                <p class="font-bold text-left">Análise por Pilar:</p>
+                                ${Object.entries(pillarScores).map(([pillar, score]) => `
+                                    <div class="text-left">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm font-medium">${pillar}</p>
+                                            <p class="text-sm font-bold text-brand-gold">${score}%</p>
+                                        </div>
+                                        <div class="w-full bg-black/10 rounded-full h-2">
+                                            <div class="bg-brand-gold h-2 rounded-full" style="width: ${score}%; transition: width 1.5s ease;"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Alerta de Gargalo -->
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 text-left">
+                                <p class="text-sm text-red-800">
+                                    <span class="font-bold">⚠️ ALERTA DE GARGALO:</span> Seu maior risco operacional e perda de lucratividade estão concentrados no pilar de <strong>${weakestPillar}</strong> com apenas <strong>${pillarScores[weakestPillar]}%</strong> de eficiência.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Tela de Captura
+            steps.push({
+                type: 'capture',
+                title: 'Dados para Contato',
+                content: `
+                    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-2">Seu diagnóstico está pronto.</h1>
+                    <p class="text-center text-gray-600 font-light mb-8">Para visualizar, preencha seus dados:</p>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="full-name" class="block text-sm font-medium text-brand-text-dark">Nome completo</label>
+                            <input type="text" name="full-name" id="full-name" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="specialty" class="block text-sm font-medium text-brand-text-dark">Especialidade médica</label>
+                            <input type="text" name="specialty" id="specialty" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="city-state" class="block text-sm font-medium text-brand-text-dark">Cidade / Estado</label>
+                            <input type="text" name="city-state" id="city-state" data-validate="true" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-brand-text-dark">E-mail</label>
+                            <input type="email" name="email" id="email" data-validate="true" placeholder="seu@email.com.br" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                        <div>
+                            <label for="whatsapp" class="block text-sm font-medium text-brand-text-dark">WhatsApp</label>
+                            <input type="text" name="whatsapp" id="whatsapp" data-validate="true" placeholder="(00) 00000-0000" class="mt-2 block w-full bg-white/80 border-gray-300 rounded-lg shadow-sm focus:ring-brand-gold focus:border-brand-gold sm:text-sm p-3 transition-colors">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                        <span>Seus dados estão protegidos. Zero spam.</span>
+                    </div>
+                `
+            });
+
+            // Tela Final
+            steps.push({
+                type: 'final',
+                content: `
+                    <div class="text-center">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-green-600 mb-4">Obrigado!</h1>
+                        <p class="text-gray-600 font-light max-w-lg mx-auto">Obrigado por compartilhar suas informações. Nossa equipe de especialistas entrará em contato em breve pelo WhatsApp com sua análise completa e direcionamentos estratégicos.</p>
+                    </div>
+                `
+            });
+
+            return steps;
+        }
+
+    </script>
+
+    <script src="questions.js"></script>
+    <script>
+        // Reinicializar formSteps após carregar questions.js
+        let formSteps = buildFormSteps();
     </script>
 </body>
 </html>
