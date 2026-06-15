@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <!-- EmailJS Library -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js" defer></script>
 
     <script>
         // Configuração personalizada para estender o tema do Tailwind CSS
@@ -845,6 +845,13 @@
 
             const submitData = async () => {
                 const diagnosis = generateDiagnosis(formData.generalScore, formData.pillarScores, formData.userDetails, formData.answers);
+
+                // Aguardar EmailJS estar carregado
+                if (typeof emailjs === 'undefined') {
+                    console.error('EmailJS não carregou. Aguardando...');
+                    setTimeout(() => submitData(), 500);
+                    return;
+                }
 
                 // EmailJS configuration
                 emailjs.init('DeBvD-W6V6AAkoCm_');
