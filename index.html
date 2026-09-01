@@ -903,8 +903,8 @@
                     const success = await submitData();
 
                     if (success) {
-                        if (window.fbq) fbq('track', 'Lead');
-                        setTimeout(() => { currentStep++; renderStep(); }, 300);
+                        const nome = encodeURIComponent(formData.userDetails['full-name'] || '');
+                        setTimeout(() => { window.location.href = `/obrigado.html?name=${nome}`; }, 300);
                     } else {
                         showValidationError('Ocorreu um erro ao enviar. Por favor, tente novamente em alguns instantes.');
                         submitBtn.disabled = false;
